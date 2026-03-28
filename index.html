@@ -26,6 +26,23 @@ body::before {
     z-index: -1;
 }
 
+/* DISCORD TEXT */
+.discord-tag {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background: rgba(0,0,0,0.75);
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 12px;
+    color: #7289da;
+    z-index: 10;
+    border: 1px solid rgba(114,137,218,0.3);
+    max-width: 280px;
+    line-height: 1.4;
+}
+.discord-tag span { color: #fff; font-weight: bold; }
+
 /* GAME AREA */
 #game {
     position: relative;
@@ -250,7 +267,7 @@ cursor: pointer;
 }
 
 .card {
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.15s ease;
     cursor: pointer;
 }
 
@@ -423,9 +440,7 @@ transition: all 0.4s ease;
     cursor: pointer; font-weight: bold;
 }
 
-/* ===================== */
 /* MULTIPLAYER LOBBY CSS */
-/* ===================== */
 #lobby-ui {
     margin-top: 20px;
     padding: 20px;
@@ -452,6 +467,7 @@ transition: all 0.4s ease;
     color: white;
     width: 85%;
     margin: 10px 0;
+    box-sizing: border-box;
 }
 .lobby-btn {
     padding: 12px 30px;
@@ -534,6 +550,169 @@ transition: all 0.4s ease;
     pointer-events: none;
     animation: reshuffleFlash 1.8s ease forwards;
 }
+
+/* ===================== */
+/* NAME BAR              */
+/* ===================== */
+#name-bar {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 25px;
+    padding: 8px 20px;
+    margin-bottom: 5px;
+}
+#name-bar .player-label {
+    font-size: 16px;
+    font-weight: bold;
+    padding: 6px 16px;
+    border-radius: 8px;
+    background: rgba(0,0,0,0.5);
+    border: 1px solid rgba(255,255,255,0.15);
+}
+#name-bar .player-label.you { color: #00ffcc; border-color: rgba(0,255,204,0.3); }
+#name-bar .player-label.opp { color: #ff6b6b; border-color: rgba(255,107,107,0.3); }
+#name-bar .vs-label {
+    font-size: 13px;
+    color: #ff4655;
+    font-weight: bold;
+    letter-spacing: 2px;
+    text-shadow: 0 0 6px rgba(255,70,85,0.5);
+}
+
+/* ===================== */
+/* CHAT BOX              */
+/* ===================== */
+#chat-container {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 280px;
+    max-height: 340px;
+    background: rgba(0,0,0,0.82);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 14px;
+    overflow: hidden;
+    z-index: 100;
+    display: none;
+    flex-direction: column;
+    backdrop-filter: blur(6px);
+    box-shadow: 0 4px 24px rgba(0,0,0,0.5);
+}
+#chat-header {
+    padding: 9px 14px;
+    background: rgba(255,70,85,0.2);
+    font-weight: bold;
+    font-size: 13px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: #ccc;
+}
+#chat-header .chat-toggle {
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    background: none;
+    border: none;
+    color: white;
+    padding: 0 4px;
+}
+#chat-header .chat-toggle:hover { opacity: 1; }
+#chat-messages {
+    height: 220px;
+    overflow-y: auto;
+    padding: 10px;
+    font-size: 13px;
+    scroll-behavior: smooth;
+}
+#chat-messages::-webkit-scrollbar { width: 4px; }
+#chat-messages::-webkit-scrollbar-track { background: transparent; }
+#chat-messages::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 4px; }
+.chat-msg {
+    margin-bottom: 7px;
+    line-height: 1.35;
+    word-break: break-word;
+}
+.chat-msg .sender { font-weight: bold; }
+.chat-msg .sender.me { color: #00ffcc; }
+.chat-msg .sender.them { color: #ff6b6b; }
+.chat-msg .msg-text { color: #ddd; }
+.chat-msg.system { color: #888; font-style: italic; font-size: 12px; text-align: center; }
+#chat-input-wrap {
+    display: flex;
+    border-top: 1px solid rgba(255,255,255,0.1);
+}
+#chat-input {
+    flex: 1;
+    padding: 9px 12px;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 13px;
+    outline: none;
+    font-family: Arial;
+}
+#chat-input::placeholder { color: #555; }
+#chat-send-btn {
+    padding: 9px 14px;
+    background: #ff4655;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+    font-family: Arial;
+}
+#chat-send-btn:hover { background: #ff6b7a; }
+
+#chat-container.minimized #chat-messages,
+#chat-container.minimized #chat-input-wrap {
+    display: none;
+}
+
+/* ===================== */
+/* DRAG AND DROP         */
+/* ===================== */
+.card[draggable="true"] {
+    cursor: grab;
+}
+.card[draggable="true"]:active {
+    cursor: grabbing;
+}
+.card.dragging {
+    opacity: 0.4;
+    transform: scale(0.95) !important;
+    box-shadow: 0 0 20px rgba(0,255,204,0.4) !important;
+}
+
+.slot.drag-active {
+    border-color: rgba(0, 255, 204, 0.4);
+    animation: pulseDropZone 1.2s ease-in-out infinite;
+}
+
+@keyframes pulseDropZone {
+    0%, 100% { border-color: rgba(0, 255, 204, 0.2); background: rgba(0, 255, 204, 0.02); }
+    50% { border-color: rgba(0, 255, 204, 0.7); background: rgba(0, 255, 204, 0.08); }
+}
+
+.slot.drag-over {
+    border: 2px solid #00ffcc !important;
+    background: rgba(0, 255, 204, 0.18) !important;
+    transform: scale(1.07) !important;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.4), inset 0 0 15px rgba(0, 255, 204, 0.1);
+}
+
+@keyframes snapIn {
+    0% { transform: scale(1.15); opacity: 0.7; }
+    60% { transform: scale(0.95); }
+    100% { transform: scale(1); opacity: 1; }
+}
+.snap-in { animation: snapIn 0.25s ease; }
 </style>
 </head>
 <body>
@@ -548,6 +727,12 @@ transition: all 0.4s ease;
 <audio id="sfx-swap" src="https://raw.githubusercontent.com/davidoroids47/card-images/main/Swap.mp3"></audio>
 <audio id="sfx-start" src="https://raw.githubusercontent.com/davidoroids47/card-images/main/StartGame.mp3"></audio>
 <audio id="sfx-select" src="https://raw.githubusercontent.com/davidoroids47/card-images/main/SelectAgent.mp3"></audio>
+
+<!-- DISCORD TAG -->
+<div class="discord-tag">
+    <span>Discord:</span> davidstrong47<br>
+    <span style="font-weight:normal;font-size:11px;color:#99a;">Add me for suggestions</span>
+</div>
 
 <div class="volume-control">🔊 <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5"></div>
 <div class="volume-control" style="top:60px;">🎵 SFX <input type="range" id="sfxSlider" min="0" max="1" step="0.01" value="0.5"></div>
@@ -573,9 +758,11 @@ transition: all 0.4s ease;
         <div id="lobby-menu" class="lobby-box">
             <div id="status-text">Select 3 Agents to Play</div>
             <br>
+            <input type="text" id="player-name-input" class="lobby-input" placeholder="Enter Your Name" maxlength="15" style="text-align:center;">
+            <br>
             <button id="create-btn" class="lobby-btn" onclick="createRoom()" disabled>Create Room</button>
             <br><br>
-            <input type="text" id="join-code-input" class="lobby-input" placeholder="Enter Room Code">
+            <input type="text" id="join-code-input" class="lobby-input" placeholder="Enter Room Code" style="text-transform:uppercase;">
             <button id="join-btn" class="lobby-btn secondary" onclick="joinRoom()" disabled>Join Room</button>
         </div>
 
@@ -602,6 +789,11 @@ transition: all 0.4s ease;
 
 <!-- GAME AREA -->
 <div id="game" style="display:none;">
+    <div id="name-bar">
+        <div class="player-label you" id="player-name-display">You</div>
+        <div class="vs-label">VS</div>
+        <div class="player-label opp" id="enemy-name-display">Opponent</div>
+    </div>
     <div class="game-area">
         <div id="result"></div>
         <div class="board-wrapper">
@@ -613,6 +805,19 @@ transition: all 0.4s ease;
     </div>
     <div id="special-hand" class="hand" style="margin-bottom:10px;"></div>
     <div id="hand" class="hand"></div>
+</div>
+
+<!-- CHAT CONTAINER -->
+<div id="chat-container">
+    <div id="chat-header">
+        <span>Chat</span>
+        <button class="chat-toggle" id="chat-toggle-btn" onclick="toggleChatMinimize()">&#8211;</button>
+    </div>
+    <div id="chat-messages"></div>
+    <div id="chat-input-wrap">
+        <input type="text" id="chat-input" placeholder="Type a message..." maxlength="120">
+        <button id="chat-send-btn" onclick="sendChat()">&#9654;</button>
+    </div>
 </div>
 
 <!-- FIREBASE MODULE SCRIPT -->
@@ -636,6 +841,18 @@ const db = getDatabase(app);
 let roomRef = null;
 let myId = null;
 let isHost = false;
+
+// =====================
+// PLAYER NAME
+// =====================
+let playerName = "Player";
+let opponentName = "Opponent";
+
+// =====================
+// CHAT STATE
+// =====================
+let chatUnsubscribe = null;
+let lastProcessedMsgTime = 0;
 
 // =====================
 // ORIGINAL SOUND & ASSETS
@@ -777,8 +994,6 @@ let selectedSpecialIndex = null;
 let bonusDraw = 0;
 let isPlacingCard = false;
 let confirmedTurn = false;
-
-// Track if alignment is in progress to prevent listener conflicts
 let alignmentInProgress = false;
 
 // =====================
@@ -791,12 +1006,9 @@ function shuffle(deck) {
     }
 }
 function isAttack(card) { return card === "Attack"; }
-
-// Check if a card belongs to the action deck (not a special role card)
 function isFromActionDeck(cardName) {
     return cardName && !cardName.includes("Sentinel") && !cardName.includes("Initiator") && !cardName.includes("Controller");
 }
-
 function isCompatible(card, agentName) {
     if (!card || isAttack(card)) return false;
     return agentUtilities[agentName] && agentUtilities[agentName].includes(card.split(" (")[0]);
@@ -821,7 +1033,7 @@ function isValidSwap(a, b) {
     return true;
 }
 function canPlaceCard(i) {
-    const { playerAlive, enemyAlive, p, e } = getAliveCounts();
+    const { playerAlive, enemyAlive } = getAliveCounts();
     if (!playerAlive[i]) return false;
     if (!enemyAlive[i]) return false;
     return true;
@@ -838,18 +1050,15 @@ function isTurnValid() {
 // DISCARD & RESHUFFLE SYSTEM
 // =====================
 function discardHand() {
-    // Move all remaining hand cards to discard deck
     discardDeck.push(...hand);
     hand = [];
 }
 
 function discardPlacedActionCards() {
-    // Move placed cards that came from the action deck to discard
     for (let i = 0; i < 3; i++) {
         if (placedCards[i] && isFromActionDeck(placedCards[i].card)) {
             discardDeck.push(placedCards[i].card);
         }
-        // Special cards (Deflect, Block, Draw2) are NOT recycled
     }
 }
 
@@ -882,21 +1091,16 @@ function animateAgentMove(fromIndex, toIndex, isPlayer = true) {
     let lanes = document.getElementById("lanes").children;
     let fromSlot = lanes[fromIndex].children[isPlayer ? 3 : 0];
     let toSlot = lanes[toIndex].children[isPlayer ? 3 : 0];
-
     let agentEl = fromSlot.querySelector("img");
     if (!agentEl) return;
-
     let fromRect = agentEl.getBoundingClientRect();
     let toRect = toSlot.getBoundingClientRect();
-
     let dx = toRect.left - fromRect.left;
     let dy = toRect.top - fromRect.top;
-
     agentEl.style.transition = "transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94)";
     agentEl.style.transform = `translate(${dx}px, ${dy}px)`;
     agentEl.style.zIndex = "100";
     agentEl.style.position = "relative";
-
     setTimeout(() => {
         agentEl.style.transition = "";
         agentEl.style.transform = "";
@@ -908,7 +1112,6 @@ function animateAgentMove(fromIndex, toIndex, isPlayer = true) {
 function autoAlignAgents() {
     let alivePlayer = playerAgents.filter(a => a && a.hp > 0);
     let aliveEnemy = enemyAgents.filter(a => a && a.hp > 0);
-
     while (alivePlayer.length < 3) alivePlayer.push({ hp: 0 });
     while (aliveEnemy.length < 3) aliveEnemy.push({ hp: 0 });
 
@@ -918,37 +1121,26 @@ function autoAlignAgents() {
         let pNew = (alivePlayer[i] && alivePlayer[i].hp > 0) ? alivePlayer[i].name : null;
         let eOld = (enemyAgents[i] && enemyAgents[i].hp > 0) ? enemyAgents[i].name : null;
         let eNew = (aliveEnemy[i] && aliveEnemy[i].hp > 0) ? aliveEnemy[i].name : null;
-        if (pOld !== pNew || eOld !== eNew) {
-            needsAlignment = true;
-            break;
-        }
+        if (pOld !== pNew || eOld !== eNew) { needsAlignment = true; break; }
     }
 
-    // Clear placed cards regardless
     placedCards = [null, null, null];
     enemyPlacedCards = [null, null, null];
 
     if (!needsAlignment) return Promise.resolve(false);
-
     alignmentInProgress = true;
 
     let lanes = document.getElementById("lanes").children;
-
     playerAgents.forEach((agent, oldIdx) => {
         if (agent && agent.hp > 0) {
             let newIdx = alivePlayer.indexOf(agent);
-            if (newIdx !== oldIdx) {
-                animateAgentMove(oldIdx, newIdx, true);
-            }
+            if (newIdx !== oldIdx) animateAgentMove(oldIdx, newIdx, true);
         }
     });
-
     enemyAgents.forEach((agent, oldIdx) => {
         if (agent && agent.hp > 0) {
             let newIdx = aliveEnemy.indexOf(agent);
-            if (newIdx !== oldIdx) {
-                animateAgentMove(oldIdx, newIdx, false);
-            }
+            if (newIdx !== oldIdx) animateAgentMove(oldIdx, newIdx, false);
         }
     });
 
@@ -956,11 +1148,9 @@ function autoAlignAgents() {
         setTimeout(() => {
             playerAgents = alivePlayer;
             enemyAgents = aliveEnemy;
-
             updateAgentsUI();
             updateEnemyUI();
             updateBoardUI();
-
             let newLanes = document.getElementById("lanes").children;
             let { playerAlive, enemyAlive } = getAliveCounts();
             for (let i = 0; i < 3; i++) {
@@ -969,7 +1159,6 @@ function autoAlignAgents() {
                     setTimeout(() => newLanes[i].classList.remove("align-flash"), 500);
                 }
             }
-
             alignmentInProgress = false;
             resolve(true);
         }, 450);
@@ -1023,14 +1212,16 @@ function selectAgent(agent, div) {
 function generateRoomCode(length = 6) {
     const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
     let code = '';
-    for (let i = 0; i < length; i++) {
-        code += chars[Math.floor(Math.random() * chars.length)];
-    }
+    for (let i = 0; i < length; i++) code += chars[Math.floor(Math.random() * chars.length)];
     return code;
 }
 
 window.createRoom = async function() {
     if (selectedAgents.length !== 3) return;
+
+    // Get player name
+    let nameInput = document.getElementById("player-name-input").value.trim();
+    playerName = nameInput || "Player";
 
     isHost = true;
     myId = "p1";
@@ -1041,20 +1232,20 @@ window.createRoom = async function() {
     let code;
     let exists = true;
     let attempts = 0;
-
     while (exists && attempts < 30) {
         code = generateRoomCode(6);
         const snapshot = await get(ref(db, 'rooms/' + code));
         exists = snapshot.exists();
         attempts++;
     }
-
     if (exists) return alert("Couldn't generate a unique code. Try again.");
 
     roomRef = ref(db, 'rooms/' + code);
 
     const initialState = {
         status: "waiting",
+        hostName: playerName,
+        guestName: "",
         host: { agents: playerAgents },
         guest: { agents: [] },
         turn: 1,
@@ -1075,8 +1266,12 @@ window.createRoom = async function() {
 
 window.joinRoom = function() {
     if (selectedAgents.length !== 3) return;
-    const roomId = document.getElementById('join-code-input').value.trim();
+    const roomId = document.getElementById('join-code-input').value.trim().toUpperCase();
     if (!roomId) return alert("Enter Room Code!");
+
+    // Get player name
+    let nameInput = document.getElementById("player-name-input").value.trim();
+    playerName = nameInput || "Player";
 
     const r = ref(db, 'rooms/' + roomId);
     
@@ -1090,12 +1285,14 @@ window.joinRoom = function() {
         roomRef = r;
 
         playerAgents = selectedAgents.map(a => ({ name: a, hp: 100 }));
-        enemyAgents = data.host.agents; 
+        enemyAgents = data.host.agents;
+        opponentName = data.hostName || "Opponent";
         generateSpecialHand();
         initDecks();
 
         const updates = {
             guest: { agents: playerAgents },
+            guestName: playerName,
             status: "playing",
             ['gameState/p2']: { agents: playerAgents, placed: [null,null,null], confirmed: false }
         };
@@ -1103,6 +1300,8 @@ window.joinRoom = function() {
         update(r, updates);
 
         startGameLocal();
+        listenForNames();
+        startChatListener();
         listenForUpdates();
     }).catch(err => alert("Error: " + err.message));
 };
@@ -1116,87 +1315,189 @@ function listenForGameStart() {
     onValue(roomRef, (snapshot) => {
         const data = snapshot.val();
         if (!data) return;
-        
         if (isHost && data.status === "playing" && !enemyAgents.length) {
             enemyAgents = data.guest.agents;
+            opponentName = data.guestName || "Opponent";
             startGameLocal();
-            listenForUpdates(); 
+            listenForNames();
+            startChatListener();
+            listenForUpdates();
         }
     });
 }
 
-function listenForUpdates() {
-    const gameStateRef = child(roomRef, 'gameState');
-    
-    onValue(gameStateRef, (snapshot) => {
-        const state = snapshot.val();
-        if (!state) return;
-
-        const oppId = myId === "p1" ? "p2" : "p1";
-        const oppData = state[oppId];
-        const myData = state[myId];
-
-        if (oppData && oppData.agents && !alignmentInProgress) {
-            let changed = false;
-            for (let i = 0; i < 3; i++) {
-                let oldName = (enemyAgents[i] && enemyAgents[i].hp > 0) ? enemyAgents[i].name : null;
-                let newName = (oppData.agents[i] && oppData.agents[i].hp > 0) ? oppData.agents[i].name : null;
-                let oldHp = enemyAgents[i] ? enemyAgents[i].hp : 0;
-                let newHp = oppData.agents[i] ? oppData.agents[i].hp : 0;
-                if (oldName !== newName || oldHp !== newHp) {
-                    changed = true;
-                    break;
-                }
-            }
-            if (changed) {
-                enemyAgents = oppData.agents;
-                updateEnemyUI();
-                autoAlignIfNeeded();
-            }
+// =====================
+// NAME SYNC
+// =====================
+function listenForNames() {
+    onValue(child(roomRef, 'hostName'), (snap) => {
+        const name = snap.val() || 'Player';
+        if (isHost) {
+            document.getElementById('player-name-display').innerText = name;
+        } else {
+            opponentName = name;
+            document.getElementById('enemy-name-display').innerText = name;
         }
-
-        if (myData && oppData && myData.confirmed && oppData.confirmed && !gameOver) {
-            enemyPlacedCards = oppData.placed || [null,null,null];
-            resolveMultiplayerTurn();
-        }
-        
-        const indicator = document.getElementById("turn-indicator");
-        if (myData && oppData) {
-            if (myData.confirmed && !oppData.confirmed) {
-                indicator.innerText = "Waiting for Opponent...";
-                indicator.style.display = "block";
-            } else if (!myData.confirmed && oppData.confirmed) {
-                indicator.innerText = "Opponent is Ready!";
-                indicator.style.display = "block";
-            } else {
-                indicator.style.display = "none";
-            }
+    });
+    onValue(child(roomRef, 'guestName'), (snap) => {
+        const name = snap.val() || 'Player 2';
+        if (isHost) {
+            opponentName = name;
+            document.getElementById('enemy-name-display').innerText = name;
+        } else {
+            document.getElementById('player-name-display').innerText = name;
         }
     });
 }
 
-function autoAlignIfNeeded() {
-    let alivePlayer = playerAgents.filter(a => a && a.hp > 0);
-    let aliveEnemy = enemyAgents.filter(a => a && a.hp > 0);
-    while (alivePlayer.length < 3) alivePlayer.push({ hp: 0 });
-    while (aliveEnemy.length < 3) aliveEnemy.push({ hp: 0 });
+// =====================
+// CHAT SYSTEM
+// =====================
+window.sendChat = function() {
+    const input = document.getElementById('chat-input');
+    const text = input.value.trim();
+    if (!text || !roomRef) return;
 
-    let needsAlign = false;
+    const chatRef = push(child(roomRef, 'chat'));
+    set(chatRef, {
+        sender: playerName,
+        senderId: myId,
+        text: text,
+        timestamp: Date.now()
+    });
+    input.value = '';
+};
+
+document.getElementById('chat-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+        e.preventDefault();
+        window.sendChat();
+    }
+});
+
+window.toggleChatMinimize = function() {
+    const container = document.getElementById('chat-container');
+    const btn = document.getElementById('chat-toggle-btn');
+    container.classList.toggle('minimized');
+    btn.innerHTML = container.classList.contains('minimized') ? '&#43;' : '&#8211;';
+};
+
+function startChatListener() {
+    document.getElementById('chat-container').style.display = 'flex';
+
+    const chatRef = child(roomRef, 'chat');
+    chatUnsubscribe = onValue(chatRef, (snapshot) => {
+        const data = snapshot.val();
+        renderChat(data);
+    });
+}
+
+function renderChat(data) {
+    const container = document.getElementById('chat-messages');
+    if (!data) {
+        container.innerHTML = '<div class="chat-msg system">Game started. Say hello!</div>';
+        return;
+    }
+
+    let messages = Object.values(data).sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+    if (messages.length > 50) messages = messages.slice(-50);
+
+    let html = '';
+    messages.forEach(m => {
+        if (m.system) {
+            html += `<div class="chat-msg system">${m.text}</div>`;
+        } else {
+            let isMe = m.senderId === myId;
+            html += `<div class="chat-msg"><span class="sender ${isMe ? 'me' : 'them'}">${m.sender || '???'}:</span> <span class="msg-text">${escapeHtml(m.text)}</span></div>`;
+        }
+    });
+
+    container.innerHTML = html;
+    container.scrollTop = container.scrollHeight;
+}
+
+function escapeHtml(text) {
+    let div = document.createElement('div');
+    div.appendChild(document.createTextNode(text));
+    return div.innerHTML;
+}
+
+// =====================
+// DRAG AND DROP SYSTEM
+// =====================
+function handleDragStart(e, index, type) {
+    if (confirmedTurn) { e.preventDefault(); return; }
+
+    let dragData = { index, type };
+    e.dataTransfer.setData('application/json', JSON.stringify(dragData));
+    e.dataTransfer.effectAllowed = 'move';
+
+    // Visual: dim the card being dragged
+    requestAnimationFrame(() => {
+        e.target.classList.add('dragging');
+    });
+
+    // Select the card (same as click)
+    if (type === 'special') {
+        selectedSpecialIndex = index;
+        selectedCardIndex = null;
+    } else {
+        selectedCardIndex = index;
+        selectedSpecialIndex = null;
+    }
+    document.querySelectorAll("#hand .card, #special-hand .card").forEach(el => el.classList.remove("selected"));
+    e.target.classList.add("selected");
+
+    // Highlight valid drop zones
+    const lanes = document.getElementById("lanes").children;
     for (let i = 0; i < 3; i++) {
-        let pOld = (playerAgents[i] && playerAgents[i].hp > 0) ? playerAgents[i].name : null;
-        let pNew = (alivePlayer[i] && alivePlayer[i].hp > 0) ? alivePlayer[i].name : null;
-        let eOld = (enemyAgents[i] && enemyAgents[i].hp > 0) ? enemyAgents[i].name : null;
-        let eNew = (aliveEnemy[i] && aliveEnemy[i].hp > 0) ? aliveEnemy[i].name : null;
-        if (pOld !== pNew || eOld !== eNew) { needsAlign = true; break; }
+        if (canPlaceCard(i) && !placedCards[i]) {
+            lanes[i].children[2].classList.add('drag-active');
+        }
+    }
+}
+
+function handleDragEnd(e) {
+    e.target.classList.remove('dragging');
+    // Remove all highlights
+    document.querySelectorAll('.drag-active').forEach(el => el.classList.remove('drag-active'));
+    document.querySelectorAll('.drag-over').forEach(el => el.classList.remove('drag-over'));
+}
+
+function handleDragOver(e) {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    e.currentTarget.classList.add('drag-over');
+}
+
+function handleDragLeave(e) {
+    e.currentTarget.classList.remove('drag-over');
+}
+
+function handleDrop(e, slotIndex) {
+    e.preventDefault();
+    e.currentTarget.classList.remove('drag-over');
+    document.querySelectorAll('.drag-active').forEach(el => el.classList.remove('drag-active'));
+
+    if (confirmedTurn) return;
+    if (placedCards[slotIndex]) return;
+
+    let data;
+    try {
+        data = JSON.parse(e.dataTransfer.getData('application/json'));
+    } catch(err) { return; }
+
+    // Set selection from drag data
+    if (data.type === 'special') {
+        selectedSpecialIndex = data.index;
+        selectedCardIndex = null;
+    } else {
+        selectedCardIndex = data.index;
+        selectedSpecialIndex = null;
     }
 
-    if (needsAlign) {
-        playerAgents = alivePlayer;
-        enemyAgents = aliveEnemy;
-        updateAgentsUI();
-        updateEnemyUI();
-        updateBoardUI();
-    }
+    // Use drag-drop mode (skip fly animation, use snap instead)
+    placeCard(slotIndex, true);
 }
 
 // =====================
@@ -1217,6 +1518,10 @@ function startGameLocal() {
     document.getElementById("agent-selection").style.display = "none";
     document.getElementById("game").style.display = "block";
     document.getElementById("deck-info").style.display = "block";
+
+    // Set name displays
+    document.getElementById('player-name-display').innerText = playerName;
+    document.getElementById('enemy-name-display').innerText = opponentName;
     
     createBoard();
     updateAgentsUI();
@@ -1265,11 +1570,10 @@ window.selectAgentSwap = function(i) {
 
     updateAgentsUI();
     updateBoardUI();
-    
     syncGameUpdate();
 }
 
-window.placeCard = function(i) {
+window.placeCard = function(i, isDragDrop = false) {
     if (isPlacingCard || confirmedTurn) return;
     if (selectedCardIndex === null && selectedSpecialIndex === null) return;
     if (playerAgents[i].hp === 0) return alert("Your agent is dead!");
@@ -1301,12 +1605,32 @@ window.placeCard = function(i) {
         placedCards[i] = { card: card };
         if (wasSpecial) specialHand.splice(removalIndex, 1);
         else hand.splice(removalIndex, 1);
+        selectedCardIndex = null;
+        selectedSpecialIndex = null;
         updateHandUI(false); updateSpecialHandUI(); updateBoardUI();
         isPlacingCard = false;
         return;
     }
 
-    // Animation
+    // Drag-and-drop path: snap-in animation instead of fly
+    if (isDragDrop) {
+        sfxPlace.currentTime = 0; sfxPlace.play().catch(()=>{});
+        placedCards[i] = { card: card };
+        if (wasSpecial) specialHand.splice(removalIndex, 1);
+        else hand.splice(removalIndex, 1);
+        selectedCardIndex = null;
+        selectedSpecialIndex = null;
+        updateHandUI(false); updateSpecialHandUI(); updateBoardUI();
+
+        // Add snap animation to the placed card image
+        const placedImg = targetSlot.querySelector("img");
+        if (placedImg) placedImg.classList.add("snap-in");
+
+        isPlacingCard = false;
+        return;
+    }
+
+    // Click path: flying card animation
     const rectStart = cardEl.getBoundingClientRect();
     const rectEnd = targetSlot.getBoundingClientRect();
     const flyingCard = cardEl.cloneNode(true);
@@ -1326,7 +1650,8 @@ window.placeCard = function(i) {
         placedCards[i] = { card: card };
         if (wasSpecial) specialHand.splice(removalIndex, 1);
         else hand.splice(removalIndex, 1);
-        
+        selectedCardIndex = null;
+        selectedSpecialIndex = null;
         flyingCard.remove();
         updateHandUI(false); updateSpecialHandUI(); updateBoardUI();
         isPlacingCard = false;
@@ -1348,12 +1673,10 @@ window.confirmTurn = function() {
     updateSpecialHandUI();
 
     const gameStateRef = child(roomRef, 'gameState');
-    
     const updates = {};
     updates[`${myId}/agents`] = playerAgents;
     updates[`${myId}/placed`] = placedCards;
     updates[`${myId}/confirmed`] = true;
-    
     update(gameStateRef, updates);
 }
 
@@ -1363,17 +1686,11 @@ window.confirmTurn = function() {
 async function resolveMultiplayerTurn() {
     if (gameOver) return;
 
-    // 1. Reveal enemy cards
     revealEnemyCards();
-    await new Promise(r => setTimeout(r, 1500)); 
+    await new Promise(r => setTimeout(r, 1500));
 
-    // 2. Resolve combat
     resolveCombat();
-    
-    // 3. Check for win/loss
     checkWin();
-    
-    // 4. Update UI to show deaths
     updateAgentsUI();
     updateEnemyUI();
 
@@ -1382,51 +1699,34 @@ async function resolveMultiplayerTurn() {
         fadeOutActionCards();
         await new Promise(r => setTimeout(r, 400));
         
-        // 5. Auto-align agents
         await autoAlignAgents();
-        
-        // 6. DISCARD PHASE: discard placed action deck cards
         discardPlacedActionCards();
-        
-        // 7. DISCARD PHASE: discard all remaining hand cards
         discardHand();
-        
-        // 8. Check if action deck needs reshuffling from discard
         checkReshuffle();
-        
-        // 9. Draw fresh cards for next turn
         drawCards();
-        
-        // 10. Update deck info display
         updateDeckInfo();
         
-        // 11. Reset turn state
         confirmedTurn = false;
         document.getElementById("confirm-btn").disabled = false;
         document.getElementById("confirm-btn").innerText = "Confirm Turn";
         updateBoardUI();
         updateHandUI(false);
 
-        // 12. Sync new state to database
         const updates = {};
         updates[`${myId}/confirmed`] = false;
         updates[`${myId}/placed`] = [null,null,null];
         updates[`${myId}/agents`] = playerAgents;
-        
         update(child(roomRef, 'gameState'), updates);
     }
 }
 
 function syncGameUpdate() {
     if (!roomRef) return;
-    
     const gameStateRef = child(roomRef, 'gameState');
-    
     const updates = {};
     updates[`${myId}/agents`] = playerAgents;
     updates[`${myId}/placed`] = placedCards;
     updates[`${myId}/confirmed`] = confirmedTurn;
-    
     update(gameStateRef, updates);
 }
 
@@ -1446,17 +1746,15 @@ function generateSpecialHand() {
 }
 
 function drawCards() {
-    // Always draw exactly 3 + bonusDraw fresh cards
     let drawCount = 3 + bonusDraw;
     for (let i = 0; i < drawCount; i++) {
         if (actionDeck.length === 0) {
-            // Emergency reshuffle if deck runs out mid-draw
             if (discardDeck.length > 0) {
                 actionDeck.push(...discardDeck);
                 discardDeck = [];
                 shuffle(actionDeck);
                 showReshuffleNotification();
-            } else break; // Truly no cards left
+            } else break;
         }
         hand.push(actionDeck.pop());
     }
@@ -1475,7 +1773,7 @@ function createBoard() {
         lane.innerHTML = `
             <div class="slot agent"></div>
             <div class="slot enemy-slot">?</div>
-            <div class="slot place-slot" onclick="placeCard(${i})">+</div>
+            <div class="slot place-slot" data-lane="${i}">+</div>
             <div class="slot agent" onclick="selectAgentSwap(${i})"></div>
         `;
         lanesDiv.appendChild(lane);
@@ -1537,6 +1835,13 @@ function updateHandUI(animate = false) {
             d.appendChild(img);
         } else d.innerText = c;
         if (animate) setTimeout(() => d.classList.add("deal"), i * 150);
+
+        // Make draggable
+        d.draggable = true;
+        d.addEventListener('dragstart', (e) => handleDragStart(e, i, 'hand'));
+        d.addEventListener('dragend', handleDragEnd);
+
+        // Click to select (fallback)
         d.onclick = () => {
             if (confirmedTurn) return;
             selectedCardIndex = i;
@@ -1559,6 +1864,13 @@ function updateSpecialHandUI() {
             img.src = cardImages[card];
             d.appendChild(img);
         } else d.innerText = card;
+
+        // Make draggable
+        d.draggable = true;
+        d.addEventListener('dragstart', (e) => handleDragStart(e, i, 'special'));
+        d.addEventListener('dragend', handleDragEnd);
+
+        // Click to select (fallback)
         d.onclick = () => {
             if (confirmedTurn) return;
             selectedSpecialIndex = i;
@@ -1575,21 +1887,26 @@ function updateBoardUI() {
     for (let i = 0; i < 3; i++) {
         let c = placedCards[i];
         let slot = lanes[i].children[2];
+        
+        // Store current innerHTML to avoid flicker if unchanged
+        let currentContent = slot.innerHTML;
         slot.innerHTML = "";
         slot.classList.remove("place-slot");
-        
+
+        // Drop zone listeners (re-attach each render since we clear innerHTML)
+        slot.addEventListener('dragover', handleDragOver);
+        slot.addEventListener('dragleave', handleDragLeave);
+        slot.addEventListener('drop', (e) => handleDrop(e, i));
+
         slot.onclick = () => {
             if (confirmedTurn) return;
-
             if (placedCards[i]) {
                 let picked = placedCards[i];
-                let isSpecial = picked.card.includes("Sentinel") || picked.card.includes("Initiator") || picked.card.includes("Controller");
+                let isSpecial = !isFromActionDeck(picked.card);
                 if (isSpecial) { specialHand.push(picked.card); selectedSpecialIndex = specialHand.length - 1; }
                 else { hand.push(picked.card); selectedCardIndex = hand.length - 1; }
                 placedCards[i] = null;
-                
                 updateBoardUI(); updateHandUI(false); updateSpecialHandUI();
-                
                 setTimeout(() => {
                     let cards = document.querySelectorAll(isSpecial ? "#special-hand .card" : "#hand .card");
                     let idx = isSpecial ? selectedSpecialIndex : selectedCardIndex;
@@ -1597,7 +1914,6 @@ function updateBoardUI() {
                 }, 0);
                 return;
             }
-            
             if (selectedCardIndex === null && selectedSpecialIndex === null) return;
             placeCard(i);
         };
@@ -1653,7 +1969,7 @@ function fadeOutActionCards() {
 }
 
 // =====================
-// COMBAT LOGIC (FIXED DEFLECT)
+// COMBAT LOGIC
 // =====================
 function resolveCombat() {
     let lanes = document.getElementById("lanes").children;
@@ -1670,47 +1986,25 @@ function resolveCombat() {
         let enemySlot = lanes[j].children[0];
         let playerSlot = lanes[i].children[3];
 
-        // =====================
-        // PLAYER ATTACK SECTION
-        // =====================
+        // PLAYER ATTACK
         if (pCard && pA.hp > 0 && eA.hp > 0 && isAttack(pCard)) {
             sfxAttack.currentTime = 0; sfxAttack.play().catch(()=>{});
 
-            // DEFLECT CHECK: Enemy has Deflect — bounce damage back to player
             if (eCard === "Deflect (Controller)") {
                 playerSlot.classList.add("hit");
                 setTimeout(() => playerSlot.classList.remove("hit"), 300);
-                if (pA.hp === 100) {
-                    pA.hp = 1;
-                } else {
-                    pA.hp = 0;
-                    justDiedPlayer[i] = true;
-                    sfxDeath.currentTime = 0; sfxDeath.play().catch(()=>{});
-                    triggerDeathAnimation(playerSlot);
-                }
-                continue; // Skip to next fight
-            }
-
-            // BLOCK CHECK: Enemy has BlockAttack — attack does nothing
-            if (eCard === "BlockAttack (Sentinel)") {
-                console.log("Attack Blocked by Sentinel");
+                if (pA.hp === 100) { pA.hp = 1; }
+                else { pA.hp = 0; justDiedPlayer[i] = true; sfxDeath.currentTime = 0; sfxDeath.play().catch(()=>{}); triggerDeathAnimation(playerSlot); }
                 continue;
             }
-
-            // Enemy has a compatible utility card — takes 99 damage (100→1)
+            if (eCard === "BlockAttack (Sentinel)") { continue; }
             if (isCompatible(eCard, eA.name)) {
                 enemySlot.classList.add("hit");
                 setTimeout(() => enemySlot.classList.remove("hit"), 300);
                 eA.hp = (eA.hp === 100) ? 1 : 0;
-                if (eA.hp === 0) {
-                    justDiedEnemy[j] = true;
-                    sfxDeath.currentTime = 0; sfxDeath.play().catch(()=>{});
-                    triggerDeathAnimation(enemySlot);
-                }
+                if (eA.hp === 0) { justDiedEnemy[j] = true; sfxDeath.currentTime = 0; sfxDeath.play().catch(()=>{}); triggerDeathAnimation(enemySlot); }
                 continue;
             }
-
-            // Enemy has no card or incompatible utility — full kill
             enemySlot.classList.add("hit");
             setTimeout(() => enemySlot.classList.remove("hit"), 300);
             eA.hp = 0;
@@ -1719,47 +2013,25 @@ function resolveCombat() {
             triggerDeathAnimation(enemySlot);
         }
 
-        // =====================
-        // ENEMY ATTACK SECTION
-        // =====================
+        // ENEMY ATTACK
         if (eCard && eA.hp > 0 && pA.hp > 0 && isAttack(eCard)) {
             sfxAttack.currentTime = 0; sfxAttack.play().catch(()=>{});
 
-            // DEFLECT CHECK: Player has Deflect — bounce damage back to enemy
             if (pCard === "Deflect (Controller)") {
                 enemySlot.classList.add("hit");
                 setTimeout(() => enemySlot.classList.remove("hit"), 300);
-                if (eA.hp === 100) {
-                    eA.hp = 1;
-                } else {
-                    eA.hp = 0;
-                    justDiedEnemy[j] = true;
-                    sfxDeath.currentTime = 0; sfxDeath.play().catch(()=>{});
-                    triggerDeathAnimation(enemySlot);
-                }
+                if (eA.hp === 100) { eA.hp = 1; }
+                else { eA.hp = 0; justDiedEnemy[j] = true; sfxDeath.currentTime = 0; sfxDeath.play().catch(()=>{}); triggerDeathAnimation(enemySlot); }
                 continue;
             }
-
-            // BLOCK CHECK: Player has BlockAttack — attack does nothing
-            if (pCard === "BlockAttack (Sentinel)") {
-                console.log("Attack Blocked by Sentinel");
-                continue;
-            }
-
-            // Player has a compatible utility card — takes 99 damage (100→1)
+            if (pCard === "BlockAttack (Sentinel)") { continue; }
             if (isCompatible(pCard, pA.name)) {
                 playerSlot.classList.add("hit");
                 setTimeout(() => playerSlot.classList.remove("hit"), 300);
                 pA.hp = (pA.hp === 100) ? 1 : 0;
-                if (pA.hp === 0) {
-                    justDiedPlayer[i] = true;
-                    sfxDeath.currentTime = 0; sfxDeath.play().catch(()=>{});
-                    triggerDeathAnimation(playerSlot);
-                }
+                if (pA.hp === 0) { justDiedPlayer[i] = true; sfxDeath.currentTime = 0; sfxDeath.play().catch(()=>{}); triggerDeathAnimation(playerSlot); }
                 continue;
             }
-
-            // Player has no card or incompatible utility — full kill
             playerSlot.classList.add("hit");
             setTimeout(() => playerSlot.classList.remove("hit"), 300);
             pA.hp = 0;
@@ -1784,7 +2056,6 @@ function triggerDeathAnimation(slot) {
     const deathSFX = document.getElementById("sfx-death");
     deathSFX.currentTime = 0;
     deathSFX.play().catch(() => {});
-
     slot.classList.add("shake");
     setTimeout(() => { slot.classList.remove("shake"); slot.classList.add("shatter"); }, 200);
     setTimeout(() => slot.classList.remove("shatter"), 700);
@@ -1802,7 +2073,13 @@ function checkWin() {
         } else {
             resultDiv.innerText = "YOU WIN"; resultDiv.classList.add("win");
         }
-        if(isHost) remove(roomRef);
+        // Send game over chat message
+        if (roomRef) {
+            const chatRef = push(child(roomRef, 'chat'));
+            let endMsg = !playerAlive ? `${playerName} has been eliminated!` : `${opponentName} has been eliminated!`;
+            set(chatRef, { system: true, text: endMsg, timestamp: Date.now() });
+        }
+        setTimeout(() => { if(isHost && roomRef) remove(roomRef); }, 3000);
     }
 }
 
