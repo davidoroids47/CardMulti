@@ -17,16 +17,21 @@ body {
 body::before {
     content: "";
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
     background: rgba(0,0,0,0.6);
     backdrop-filter: blur(3px);
     z-index: -1;
 }
 
 /* GAME AREA */
-#game { position: relative; }
+#game {
+    position: relative;
+}
 
+/* LANES + BUTTONS WRAPPER */
 .game-area {
     display: flex;
     justify-content: center;
@@ -35,13 +40,18 @@ body::before {
     max-width: 900px;
     margin: 0 auto;
 }
-
+.fade-out {
+opacity: 0;
+transform: scale(0.8);
+transition: all 0.5s ease;
+}
 .board-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
+/* ROW + LANES */
 .row {
     display: flex;
     justify-content: center;
@@ -58,6 +68,7 @@ body::before {
     border-radius: 15px;
 }
 
+/* CARD SLOTS */
 .slot {
     width: 130px;
     height: 170px;
@@ -86,18 +97,28 @@ body::before {
     font-weight: bold;
 }
 
+.place-slot:hover {
+    color: rgba(255,255,255,0.8);
+}
+
+.enemy-slot {
+    font-size: 60px;
+    color: rgba(255,255,255,0.5);
+    font-weight: bold;
+}
+/* HAND */
 .hand {
     display: flex;
     justify-content: center;
     margin-top: 20px;
 }
 
+/* CONTROLS */
 .controls {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
+display: flex;
+flex-direction: column;
+gap: 15px;
 }
-
 .confirm-btn {
     padding: 18px 28px;
     font-size: 18px;
@@ -110,41 +131,50 @@ body::before {
     transition: 0.2s;
 }
 
-.confirm-btn:hover { background: #27ae60; transform: scale(1.05); }
-.confirm-btn:disabled { background: #555; color: #888; cursor: not-allowed; transform: none; }
+.confirm-btn:hover {
+    background: #27ae60;
+    transform: scale(1.05);
+}
+.confirm-btn:disabled {
+    background: #555;
+    color: #777;
+    cursor: not-allowed;
+    transform: none;
+}
 
-/* CARD IMAGES */
+/* CARD IMAGES FULL SIZE */
 .slot img {
-    width: 100%; height: 100%;
-    object-fit: cover;
-    border-radius: 10px;
-    pointer-events: none;
-    transition: transform 0.2s ease;
+width: 100%;
+height: 100%;
+object-fit: cover;
+border-radius: 10px;
+pointer-events: none;
+transition: transform 0.2s ease;
 }
 
-/* SELECTED STATE */
-.selected {
-    border: 2px solid #00ffcc !important;
-    box-shadow: 0 0 20px #00ffcc;
-    transform: scale(1.1);
+.slot:hover img {
+transform: scale(1.05);
 }
 
-/* VOLUME */
 .volume-control {
-    position: fixed;
-    top: 20px; right: 20px;
-    background: rgba(0,0,0,0.6);
-    padding: 8px 12px;
-    border-radius: 10px;
-    font-size: 14px;
-    z-index: 10;
+position: fixed;
+top: 20px;
+right: 20px;
+background: rgba(0,0,0,0.6);
+padding: 8px 12px;
+border-radius: 10px;
+font-size: 14px;
+z-index: 10;
 }
-.volume-control input { cursor: pointer; }
 
-/* RESULT */
+.volume-control input {
+cursor: pointer;
+}
+
 #result {
     position: fixed;
-    top: 50%; left: 50%;
+    top: 50%;
+    left: 50%;
     transform: translate(-50%, -50%) scale(0.8);
     font-size: 48px;
     font-weight: bold;
@@ -153,13 +183,249 @@ body::before {
     z-index: 9999;
     transition: all 0.4s ease;
 }
-#result.win { opacity: 1; transform: translate(-50%, -50%) scale(1.3); color: #00ff88; text-shadow: 0 0 10px #00ff88; }
-#result.lose { opacity: 1; transform: translate(-50%, -50%) scale(1.3); color: #ff4444; text-shadow: 0 0 10px #ff4444; }
 
-/* DEAD TEXT */
-.dead-text { color: #ff2b2b; font-weight: bold; font-size: 16px; text-shadow: 0 0 5px #ff2b2b; }
+#result.win {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.3);
+    color: #00ff88;
+    text-shadow: 0 0 10px #00ff88, 0 0 20px #00ff88, 0 0 40px #00ff88;
+}
 
-/* TURN INDICATOR */
+#result.lose {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1.3);
+    color: #ff4444;
+    text-shadow: 0 0 10px #ff4444, 0 0 20px #ff4444, 0 0 40px #ff0000;
+}
+#special-hand {
+    border-top: 2px solid rgba(255,255,255,0.2);
+    padding-top: 10px;
+}
+
+.card {
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: translateY(-10px) scale(1.08);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.6);
+}
+
+/* ANIMATIONS */
+@keyframes dealCard {
+    0% { transform: translateX(-200px) translateY(60px) scale(0.3); opacity: 0; }
+    100% { transform: translateX(0) translateY(0) scale(1); opacity: 1; }
+}
+.deal { animation: dealCard 0.4s ease; }
+
+@keyframes playCard {
+    0% { transform: scale(1) translateY(0); opacity: 1; }
+    100% { transform: scale(0.7) translateY(-60px); opacity: 0; }
+}
+.playing { animation: playCard 0.3s ease forwards; }
+
+.place-pop { animation: popIn 0.2s ease; }
+@keyframes popIn {
+    0% { transform: scale(0.8); opacity: 0.5; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes hitFlash {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.1); background: rgba(255,0,0,0.4); }
+    100% { transform: scale(1); }
+}
+.hit { animation: hitFlash 0.3s ease; }
+
+/* SHATTER SYSTEM */
+.slot { position: relative; overflow: hidden; }
+
+.crack::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image:
+        linear-gradient(120deg, transparent 48%, white 49%, transparent 51%),
+        linear-gradient(60deg, transparent 48%, white 49%, transparent 51%),
+        linear-gradient(30deg, transparent 48%, white 49%, transparent 51%);
+    opacity: 0.8;
+    pointer-events: none;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-4px); }
+    50% { transform: translateX(4px); }
+    75% { transform: translateX(-3px); }
+    100% { transform: translateX(0); }
+}
+.shake { animation: shake 0.2s; }
+
+@keyframes shatter {
+    0% { transform: scale(1) rotate(0deg); opacity: 1; }
+    40% { transform: scale(1.1) rotate(3deg); }
+    100% { transform: scale(0) rotate(-25deg); opacity: 0; }
+}
+.shatter { animation: shatter 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
+
+.card-fly {
+position: fixed;
+width: 80px;
+height: 120px;
+z-index: 999;
+pointer-events: none;
+transition: all 0.4s ease;
+}
+.card-fly img { width: 100%; height: 100%; object-fit: cover; }
+
+.dead-text {
+    color: #ff2b2b;
+    font-weight: bold;
+    font-size: 16px;
+    text-shadow: 0 0 5px #ff2b2b, 0 0 10px #ff0000;
+}
+
+@keyframes deadAppear {
+    0% { opacity: 0; transform: scale(0.8); }
+    40% { transform: scale(1.15); }
+    100% { opacity: 1; transform: scale(1); }
+}
+.dead-animate { animation: deadAppear 0.35s ease; }
+
+/* AGENT SELECTION */
+#agent-options {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 20px;
+    padding: 20px 0;
+}
+
+#agent-options .card {
+    width: 140px;
+    aspect-ratio: 7 / 10;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #111;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+#agent-options .card img { max-width: 100%; max-height: 100%; object-fit: contain; display: block; }
+#agent-options .card:hover { transform: scale(1.05); box-shadow: 0 0 15px rgba(255, 255, 255, 0.4); }
+
+#loading-text {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    font-weight: bold;
+    color: #00ffcc;
+    text-shadow: 0 0 10px #00ffcc;
+    opacity: 0;
+    z-index: 9999;
+    transition: opacity 0.5s ease;
+}
+#loading-text.show { opacity: 1; }
+
+@keyframes enemyFlip {
+    0% { transform: rotateY(90deg) scale(0.8); opacity: 0; }
+    50% { transform: rotateY(-10deg) scale(1.05); }
+    100% { transform: rotateY(0deg) scale(1); opacity: 1; }
+}
+.enemy-reveal { animation: enemyFlip 0.4s ease forwards; backface-visibility: hidden; }
+
+@keyframes actionFadeOut {
+    0% { opacity: 1; transform: scale(1); }
+    100% { opacity: 0; transform: scale(0.7); }
+}
+.action-fade { animation: actionFadeOut 0.4s ease forwards; }
+
+/* MODAL */
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.85); backdrop-filter: blur(6px);
+    z-index: 20000; display: none; justify-content: center; align-items: center;
+}
+.modal-overlay.show { display: flex; }
+.modal-content {
+    position: relative; max-width: 90vw; max-height: 90vh;
+    background: #1a1a1a; border: 2px solid #333; border-radius: 12px;
+    padding: 15px; box-shadow: 0 0 40px rgba(0,0,0,0.8);
+}
+.modal-content img { max-width: 100%; max-height: 75vh; border-radius: 8px; }
+.nav-arrow {
+    position: absolute; bottom: 15px; font-size: 32px; color: white;
+    cursor: pointer; opacity: 0.6; background: rgba(0,0,0,0.5);
+    border-radius: 50%; width: 40px; height: 40px;
+    display: flex; justify-content: center; align-items: center;
+}
+.nav-arrow.left { left: 15px; }
+.nav-arrow.right { right: 15px; }
+.close-modal {
+    position: absolute; top: -15px; right: -15px; font-size: 24px;
+    color: white; background: #ff4655; width: 35px; height: 35px;
+    border-radius: 50%; display: flex; justify-content: center; align-items: center;
+    cursor: pointer; font-weight: bold;
+}
+
+/* ===================== */
+/* MULTIPLAYER LOBBY CSS */
+/* ===================== */
+#lobby-ui {
+    margin-top: 20px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+.lobby-box {
+    background: rgba(0,0,0,0.8);
+    border: 2px solid #ff4655;
+    border-radius: 15px;
+    padding: 30px;
+    max-width: 400px;
+    width: 90%;
+    text-align: center;
+}
+.lobby-input {
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid #555;
+    background: #222;
+    color: white;
+    width: 85%;
+    margin: 10px 0;
+}
+.lobby-btn {
+    padding: 12px 30px;
+    font-size: 16px;
+    font-weight: bold;
+    background: #ff4655;
+    border: none;
+    border-radius: 8px;
+    color: white;
+    cursor: pointer;
+    transition: 0.2s;
+    margin: 5px;
+}
+.lobby-btn:hover { background: #ff6b7a; transform: scale(1.05); }
+.lobby-btn.secondary { background: #333; border: 1px solid #555; }
+.lobby-btn:disabled { background: #444; color: #666; cursor: not-allowed; }
+
+#room-code-display {
+    color: #00ffcc;
+    font-size: 24px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    user-select: all;
+    margin: 10px 0;
+}
+
 .turn-indicator {
     position: fixed;
     top: 100px; left: 50%;
@@ -173,82 +439,9 @@ body::before {
     z-index: 500;
     display: none;
 }
-
-/* ===================== */
-/* LOBBY & AGENT SELECT STYLES */
-/* ===================== */
-
-#agent-selection {
-    margin-top: 50px;
-    padding: 20px;
-}
-
-.lobby-container {
-    background: rgba(0,0,0,0.8);
-    border: 2px solid #ff4655;
-    border-radius: 15px;
-    padding: 30px;
-    max-width: 600px;
-    margin: 20px auto;
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-}
-
-.lobby-input {
-    padding: 12px;
-    font-size: 16px;
-    border-radius: 8px;
-    border: 1px solid #555;
-    background: #222;
-    color: white;
-    width: 80%;
-    text-align: center;
-}
-
-.lobby-btn {
-    padding: 12px 30px;
-    font-size: 16px;
-    font-weight: bold;
-    background: #ff4655;
-    border: none;
-    border-radius: 8px;
-    color: white;
-    cursor: pointer;
-    transition: 0.2s;
-    margin: 5px;
-}
-
-.lobby-btn:hover { background: #ff6b7a; transform: scale(1.05); }
-.lobby-btn:disabled { background: #444; color: #666; cursor: not-allowed; }
-
-.lobby-btn.secondary {
-    background: #333;
-    border: 1px solid #555;
-}
-
-#status-text {
-    color: #aaa;
-    font-size: 14px;
-    min-height: 20px;
-}
-
-#room-code-display {
-    color: #00ffcc;
-    font-size: 24px;
-    font-weight: bold;
-    letter-spacing: 2px;
-    user-select: all;
-}
-
-/* HIDDEN CLASS */
-.hidden { display: none !important; }
-
 </style>
 </head>
 <body>
-
-<!-- AUDIO -->
 <audio id="bg-music" loop>
     <source src="https://raw.githubusercontent.com/davidoroids47/card-images/main/Valorant%20Main%20Menu%20-%20Official%20Theme%20%20Episode%206%20Act%20I.mp3" type="audio/mpeg">
 </audio>
@@ -257,57 +450,60 @@ body::before {
 <audio id="sfx-place" src="https://raw.githubusercontent.com/davidoroids47/card-images/main/PlaceCard.mp3"></audio>
 <audio id="sfx-hover" src="https://raw.githubusercontent.com/davidoroids47/card-images/main/Hover.mp3"></audio>
 <audio id="sfx-confirm" src="https://raw.githubusercontent.com/davidoroids47/card-images/main/Confirm.mp3"></audio>
+<audio id="sfx-swap" src="https://raw.githubusercontent.com/davidoroids47/card-images/main/Swap.mp3"></audio>
 <audio id="sfx-start" src="https://raw.githubusercontent.com/davidoroids47/card-images/main/StartGame.mp3"></audio>
+<audio id="sfx-select" src="https://raw.githubusercontent.com/davidoroids47/card-images/main/SelectAgent.mp3"></audio>
 
 <div class="volume-control">🔊 <input type="range" id="volumeSlider" min="0" max="1" step="0.01" value="0.5"></div>
 <div class="volume-control" style="top:60px;">🎵 SFX <input type="range" id="sfxSlider" min="0" max="1" step="0.01" value="0.5"></div>
 
 <!-- TURN INDICATOR -->
-<div class="turn-indicator" id="turn-indicator">Your Turn</div>
+<div class="turn-indicator" id="turn-indicator">Waiting...</div>
 
-<!-- RESULT -->
-<div id="result"></div>
+<h1>Valorant Card Game</h1>
 
-<!-- ========================================== -->
-<!-- STEP 1: AGENT SELECTION & LOBBY (Visible First) -->
-<!-- ========================================== -->
-<div id="lobby-ui">
-    <div id="agent-selection">
-        <h1 style="color:#ff4655; margin-bottom:10px;">VALORANT CARD GAME</h1>
-        <h3 id="select-status">Select 3 Agents</h3>
-        <div id="agent-options" class="row"></div>
-    </div>
-
-    <!-- This container appears only after 3 agents selected -->
-    <div id="matchmaking-box" class="lobby-container hidden">
-        <div id="status-text">Ready to Play</div>
-        
-        <div>
-            <button id="create-btn" class="lobby-btn">Create Room</button>
-        </div>
-        
-        <div style="border-top:1px solid #444; padding-top:15px; margin-top:10px;">
-            <input type="text" id="join-code-input" class="lobby-input" placeholder="Enter Room Code">
+<!-- AGENT SELECTION -->
+<div id="agent-selection">
+    <h2>Select 3 Agents</h2>
+    <button class="how-to-btn" onclick="openHowToPlay()">How to Play</button>
+    <div id="agent-options" class="row"></div>
+    
+    <!-- MULTIPLAYER LOBBY CONTROLS -->
+    <div id="lobby-ui">
+        <div id="lobby-menu" class="lobby-box">
+            <div id="status-text">Select 3 Agents to Play</div>
             <br>
-            <button id="join-btn" class="lobby-btn secondary">Join Room</button>
+            <button id="create-btn" class="lobby-btn" onclick="createRoom()" disabled>Create Room</button>
+            <br><br>
+            <input type="text" id="join-code-input" class="lobby-input" placeholder="Enter Room Code">
+            <button id="join-btn" class="lobby-btn secondary" onclick="joinRoom()" disabled>Join Room</button>
         </div>
-    </div>
 
-    <!-- Waiting Screen (Host Only) -->
-    <div id="waiting-box" class="lobby-container hidden">
-        <h3>Waiting for Opponent...</h3>
-        <p>Give this code to your friend:</p>
-        <div id="room-code-display">CODE</div>
-        <button class="lobby-btn secondary" onclick="copyCode()">Copy Code</button>
-        <div id="wait-status" style="color:#aaa; margin-top:10px;">Waiting...</div>
+        <div id="waiting-menu" class="lobby-box" style="display:none;">
+            <h3>Waiting for Opponent...</h3>
+            <p>Share this code:</p>
+            <div id="room-code-display">CODE</div>
+            <button class="lobby-btn secondary" onclick="copyCode()">Copy Code</button>
+            <div id="wait-status" style="color:#aaa; margin-top:10px;">Waiting...</div>
+        </div>
     </div>
 </div>
 
-<!-- ========================================== -->
-<!-- STEP 2: GAME AREA (Hidden Initially) -->
-<!-- ========================================== -->
-<div id="game" class="hidden">
+<!-- HOW TO PLAY MODAL -->
+<div id="how-to-modal" class="modal-overlay" onclick="closeHowToPlay(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+        <div class="close-modal" onclick="closeHowToPlay()">&times;</div>
+        <img id="tutorial-img" src="https://raw.githubusercontent.com/davidoroids47/card-images/main/Pg1.png" alt="Tutorial">
+        <div class="nav-arrow left" onclick="prevSlide()">&#10094;</div>
+        <div class="nav-arrow right" onclick="nextSlide()">&#10095;</div>
+        <div class="page-indicator" id="page-indicator">1 / 9</div>
+    </div>
+</div>
+
+<!-- GAME AREA -->
+<div id="game" style="display:none;">
     <div class="game-area">
+        <div id="result"></div>
         <div class="board-wrapper">
             <div class="row" id="lanes"></div>
         </div>
@@ -319,635 +515,895 @@ body::before {
     <div id="hand" class="hand"></div>
 </div>
 
-<!-- ========================================== -->
 <!-- FIREBASE MODULE SCRIPT -->
-<!-- ========================================== -->
 <script type="module">
-    // =====================
-    // FIREBASE SETUP
-    // =====================
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getDatabase, ref, set, get, onValue, update, push } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+import { getDatabase, ref, set, get, onValue, update, push, remove } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const firebaseConfig = {
-        apiKey: "AIzaSyC3KdYnUGBZa-9Ja2pC8aWP-90PnJAhd0U",
-        authDomain: "card-game-56bf7.firebaseapp.com",
-        databaseURL: "https://card-game-56bf7-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "card-game-56bf7",
-        storageBucket: "card-game-56bf7.firebasestorage.app",
-        messagingSenderId: "806345391190",
-        appId: "1:806345391190:web:d3217beea6c4d7b987cff7",
-        measurementId: "G-YJ9MRG34YY"
-    };
+const firebaseConfig = {
+    apiKey: "AIzaSyC3KdYnUGBZa-9Ja2pC8aWP-90PnJAhd0U",
+    authDomain: "card-game-56bf7.firebaseapp.com",
+    databaseURL: "https://card-game-56bf7-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "card-game-56bf7",
+    storageBucket: "card-game-56bf7.firebasestorage.app",
+    messagingSenderId: "806345391190",
+    appId: "1:806345391190:web:d3217beea6c4d7b987cff7",
+    measurementId: "G-YJ9MRG34YY"
+};
 
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    let roomRef = null;
-    let myId = null;
-    let isHost = false;
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+let roomRef = null;
+let myId = null;
+let isHost = false;
 
-    // =====================
-    // CONSTANTS & STATE
-    // =====================
-    const sfxAttack = document.getElementById("sfx-attack");
-    const sfxDeath = document.getElementById("sfx-death");
-    const bgMusic = document.getElementById("bg-music");
-    const musicSlider = document.getElementById("volumeSlider");
-    const sfxSlider = document.getElementById("sfxSlider");
-    const sfxPlace = document.getElementById("sfx-place");
-    const sfxHover = document.getElementById("sfx-hover");
-    const sfxConfirm = document.getElementById("sfx-confirm");
-    const sfxStart = document.getElementById("sfx-start");
+// =====================
+// ORIGINAL SOUND & ASSETS
+// =====================
+const sfxAttack = document.getElementById("sfx-attack");
+const sfxDeath = document.getElementById("sfx-death");
+const bgMusic = document.getElementById("bg-music");
+const musicSlider = document.getElementById("volumeSlider");
+const sfxSlider = document.getElementById("sfxSlider");
+const sfxPlace = document.getElementById("sfx-place");
+const sfxHover = document.getElementById("sfx-hover");
+const sfxSwap = document.getElementById("sfx-swap");
+const sfxConfirm = document.getElementById("sfx-confirm");
+const sfxStart = document.getElementById("sfx-start");
+const sfxSelect = document.getElementById("sfx-select");
 
-    // Data Constants (Must be defined before use)
-    const agentUtilities = {
-      "Phoenix": ["Blaze","Curveball","Hot Hands"], "Reyna": ["Leer","Devour","Dismiss"],
-      "Raze": ["Boom Bot","Blast Pack","Paint Shells"], "Jett": ["Cloudburst","Updraft","Tailwind"],
-      "Brimstone": ["Stim Beacon","Incendiary","Sky Smoke"], "Omen": ["Shrouded Step","Paranoia","Dark Cover"],
-      "Sage": ["Barrier Orb","Slow Orb","Healing Orb"], "Chamber": ["Trademark","Headhunter","Rendezvous"],
-      "Sova": ["Owl Drone","Shock Dart","Recon Bolt"], "Breach": ["Aftershock","Flashpoint","Fault Line"]
-    };
+bgMusic.volume = musicSlider.value;
+musicSlider.addEventListener("input", () => bgMusic.volume = musicSlider.value);
+sfxSlider.addEventListener("input", () => {
+    sfxAttack.volume = sfxSlider.value; sfxDeath.volume = sfxSlider.value;
+    sfxPlace.volume = sfxSlider.value; sfxHover.volume = sfxSlider.value;
+    sfxSwap.volume = sfxSlider.value; sfxConfirm.volume = sfxSlider.value * 0.8;
+    sfxStart.volume = sfxSlider.value; sfxSelect.volume = sfxSlider.value;
+});
+document.addEventListener("click", () => bgMusic.play().catch(()=>{}), { once: true });
 
-    const agentRoles = {
-      "Brimstone": "Controller", "Omen": "Controller", "Sova": "Initiator", "Breach": "Initiator",
-      "Sage": "Sentinel", "Chamber": "Sentinel", "Jett": "Duelist", "Reyna": "Duelist", "Phoenix": "Duelist", "Raze": "Duelist"
-    };
+const tutorialImages = [
+    "https://raw.githubusercontent.com/davidoroids47/card-images/main/Pg1.png",
+    "https://raw.githubusercontent.com/davidoroids47/card-images/main/Pg2.png",
+    "https://raw.githubusercontent.com/davidoroids47/card-images/main/Pg3.png",
+    "https://raw.githubusercontent.com/davidoroids47/card-images/main/Pg4.png",
+    "https://raw.githubusercontent.com/davidoroids47/card-images/main/Pg5.png",
+    "https://raw.githubusercontent.com/davidoroids47/card-images/main/Pg6.png",
+    "https://raw.githubusercontent.com/davidoroids47/card-images/main/Pg7.png",
+    "https://raw.githubusercontent.com/davidoroids47/card-images/main/Pg8.png",
+    "https://raw.githubusercontent.com/davidoroids47/card-images/main/Pg9.png"
+];
+let currentSlide = 0;
+window.openHowToPlay = () => { currentSlide = 0; updateSlide(); document.getElementById("how-to-modal").classList.add("show"); };
+window.closeHowToPlay = (e) => { if(!e || e.target.id === "how-to-modal") document.getElementById("how-to-modal").classList.remove("show"); };
+window.nextSlide = () => { if(currentSlide < tutorialImages.length - 1) { currentSlide++; updateSlide(); } };
+window.prevSlide = () => { if(currentSlide > 0) { currentSlide--; updateSlide(); } };
+function updateSlide() {
+    document.getElementById("tutorial-img").src = tutorialImages[currentSlide];
+    document.getElementById("page-indicator").innerText = `${currentSlide + 1} / ${tutorialImages.length}`;
+    document.querySelector(".nav-arrow.left").style.visibility = currentSlide === 0 ? "hidden" : "visible";
+    document.querySelector(".nav-arrow.right").style.visibility = currentSlide === tutorialImages.length - 1 ? "hidden" : "visible";
+}
 
-    const agentImages = {
-      "Breach": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Breach.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/BreachLow.png" },
-      "Brimstone": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Brim.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/BrimLow.png" },
-      "Chamber": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Chamber.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/ChamberLow.png" },
-      "Jett": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Jett.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/JettLow.png" },
-      "Omen": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Omen.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/OmenLow.png" },
-      "Phoenix": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Phoenix.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Phoenix%20Low.png" },
-      "Raze": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Raze.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/RazeLow.png" },
-      "Reyna": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Reyna.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/ReynaLow.png" },
-      "Sage": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Sage.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/SageLow.png" },
-      "Sova": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Sova.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/SovaLow.png" }
-    };
+// =====================
+// GAME DATA
+// =====================
+const agentUtilities = {
+  "Phoenix": ["Blaze","Curveball","Hot Hands"], "Reyna": ["Leer","Devour","Dismiss"],
+  "Raze": ["Boom Bot","Blast Pack","Paint Shells"], "Jett": ["Cloudburst","Updraft","Tailwind"],
+  "Brimstone": ["Stim Beacon","Incendiary","Sky Smoke"], "Omen": ["Shrouded Step","Paranoia","Dark Cover"],
+  "Sage": ["Barrier Orb","Slow Orb","Healing Orb"], "Chamber": ["Trademark","Headhunter","Rendezvous"],
+  "Sova": ["Owl Drone","Shock Dart","Recon Bolt"], "Breach": ["Aftershock","Flashpoint","Fault Line"]
+};
+const agentRoles = {
+  "Brimstone": "Controller", "Omen": "Controller", "Sova": "Initiator", "Breach": "Initiator",
+  "Sage": "Sentinel", "Chamber": "Sentinel", "Jett": "Duelist", "Reyna": "Duelist", "Phoenix": "Duelist", "Raze": "Duelist"
+};
+const agentImages = {
+  "Breach": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Breach.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/BreachLow.png" },
+  "Brimstone": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Brim.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/BrimLow.png" },
+  "Chamber": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Chamber.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/ChamberLow.png" },
+  "Jett": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Jett.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/JettLow.png" },
+  "Omen": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Omen.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/OmenLow.png" },
+  "Phoenix": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Phoenix.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Phoenix%20Low.png" },
+  "Raze": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Raze.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/RazeLow.png" },
+  "Reyna": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Reyna.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/ReynaLow.png" },
+  "Sage": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Sage.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/SageLow.png" },
+  "Sova": { full: "https://raw.githubusercontent.com/davidoroids47/card-images/main/Sova.png", low: "https://raw.githubusercontent.com/davidoroids47/card-images/main/SovaLow.png" }
+};
+const cardImages = {
+  "Blaze (Phoenix)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/1.png",
+  "Curveball (Phoenix)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/2.png",
+  "Hot Hands (Phoenix)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/3.png",
+  "Leer (Reyna)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/4.png",
+  "Devour (Reyna)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/5.png",
+  "Dismiss (Reyna)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/6.png",
+  "Boom Bot (Raze)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/7.png",
+  "Blast Pack (Raze)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/8.png",
+  "Paint Shells (Raze)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/9.png",
+  "Cloudburst (Jett)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/10.png",
+  "Updraft (Jett)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/11.png",
+  "Tailwind (Jett)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/12.png",
+  "Stim Beacon (Brimstone)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/13.png",
+  "Incendiary (Brimstone)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/14.png",
+  "Sky Smoke (Brimstone)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/15.png",
+  "Shrouded Step (Omen)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/16.png",
+  "Paranoia (Omen)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/17.png",
+  "Dark Cover (Omen)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/18.png",
+  "Barrier Orb (Sage)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/19.png",
+  "Slow Orb (Sage)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/20.png",
+  "Healing Orb (Sage)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/21.png",
+  "Trademark (Chamber)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/22.png",
+  "Headhunter (Chamber)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/23.png",
+  "Rendezvous (Chamber)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/24.png",
+  "Owl Drone (Sova)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/25.png",
+  "Shock Dart (Sova)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/26.png",
+  "Recon Bolt (Sova)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/27.png",
+  "Aftershock (Breach)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/28.png",
+  "Flashpoint (Breach)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/29.png",
+  "Fault Line (Breach)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/30.png",
+  "Attack": "https://raw.githubusercontent.com/davidoroids47/card-images/main/31.png" ,
+  "Deflect (Controller)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/Controller.png" ,
+  "Draw2 (Initiator)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/Initiator.png" ,
+  "BlockAttack (Sentinel)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/Sentinel.png" 
+};
 
-    const cardImages = {
-      "Blaze (Phoenix)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/1.png",
-      "Curveball (Phoenix)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/2.png",
-      "Hot Hands (Phoenix)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/3.png",
-      "Leer (Reyna)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/4.png",
-      "Devour (Reyna)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/5.png",
-      "Dismiss (Reyna)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/6.png",
-      "Boom Bot (Raze)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/7.png",
-      "Blast Pack (Raze)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/8.png",
-      "Paint Shells (Raze)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/9.png",
-      "Cloudburst (Jett)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/10.png",
-      "Updraft (Jett)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/11.png",
-      "Tailwind (Jett)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/12.png",
-      "Stim Beacon (Brimstone)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/13.png",
-      "Incendiary (Brimstone)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/14.png",
-      "Sky Smoke (Brimstone)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/15.png",
-      "Shrouded Step (Omen)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/16.png",
-      "Paranoia (Omen)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/17.png",
-      "Dark Cover (Omen)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/18.png",
-      "Barrier Orb (Sage)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/19.png",
-      "Slow Orb (Sage)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/20.png",
-      "Healing Orb (Sage)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/21.png",
-      "Trademark (Chamber)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/22.png",
-      "Headhunter (Chamber)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/23.png",
-      "Rendezvous (Chamber)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/24.png",
-      "Owl Drone (Sova)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/25.png",
-      "Shock Dart (Sova)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/26.png",
-      "Recon Bolt (Sova)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/27.png",
-      "Aftershock (Breach)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/28.png",
-      "Flashpoint (Breach)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/29.png",
-      "Fault Line (Breach)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/30.png",
-      "Attack": "https://raw.githubusercontent.com/davidoroids47/card-images/main/31.png" ,
-      "Deflect (Controller)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/Controller.png" ,
-      "Draw2 (Initiator)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/Initiator.png" ,
-      "BlockAttack (Sentinel)": "https://raw.githubusercontent.com/davidoroids47/card-images/main/Sentinel.png" 
-    };
+// =====================
+// GAME STATE
+// =====================
+let agentDeck = Object.keys(agentUtilities);
+shuffle(agentDeck);
 
-    // Game State Variables
-    let agentDeck = Object.keys(agentUtilities);
-    let selectedAgents = []; // Temporary storage for selection
-    
-    let myAgents = [];
-    let oppAgents = [];
-    let myHand = [];
-    let myPlacedCards = [null, null, null];
-    let gameOver = false;
-    let confirmedTurn = false;
-    let specialHand = [];
-    let selectedCardIndex = null;
-    let selectedSpecialIndex = null;
+let agentChoices = [];
+let selectedAgents = [];
 
-    // =====================
-    // INITIALIZATION
-    // =====================
-    shuffle(agentDeck);
-    bgMusic.volume = musicSlider.value;
-    
-    musicSlider.addEventListener("input", () => bgMusic.volume = musicSlider.value);
-    sfxSlider.addEventListener("input", () => {
-        sfxAttack.volume = sfxSlider.value;
-        sfxDeath.volume = sfxSlider.value;
-        sfxPlace.volume = sfxSlider.value;
-        sfxHover.volume = sfxSlider.value;
-        sfxConfirm.volume = sfxSlider.value;
+// State Variables
+let playerAgents = []; // My Agents
+let enemyAgents = [];  // Opponent Agents
+let hand = [];         // My Hand
+let specialHand = [];  // My Specials
+let placedCards = [null,null,null]; // My Placed Cards
+let enemyPlacedCards = [null,null,null]; // Opponent Placed Cards
+
+// Logic Variables
+let actionDeck = [];
+let discardDeck = [];
+let gameOver = false;
+let justDiedPlayer = [false, false, false];
+let justDiedEnemy = [false, false, false];
+let selectedAgentIndex = null;
+let selectedCardIndex = null;
+let selectedSpecialIndex = null;
+let bonusDraw = 0;
+let isPlacingCard = false;
+let confirmedTurn = false; // Local lock
+
+// =====================
+// UTILITY FUNCTIONS
+// =====================
+function shuffle(deck) {
+    for (let i = deck.length - 1; i > 0; i--) {
+        let j = Math.floor(Math.random() * (i + 1));
+        [deck[i], deck[j]] = [deck[j], deck[i]];
+    }
+}
+function isAttack(card) { return card === "Attack"; }
+function isCompatible(card, agentName) {
+    if (!card || isAttack(card)) return false;
+    return agentUtilities[agentName].includes(card.split(" (")[0]);
+}
+function getAliveCounts() {
+    const playerAlive = playerAgents.map(a => a && a.hp > 0);
+    const enemyAlive = enemyAgents.map(a => a && a.hp > 0);
+    const p = playerAlive.filter(Boolean).length;
+    const e = enemyAlive.filter(Boolean).length;
+    return { playerAlive, enemyAlive, p, e };
+}
+function isValidSwap(a, b) {
+    const { playerAlive, enemyAlive, p, e } = getAliveCounts();
+    if (!playerAlive[a] || !playerAlive[b]) return false;
+    if (p === 1 && e === 1) return false;
+    if (p === 2 && e === 2) return enemyAlive[a] && enemyAlive[b];
+    if (p === 3 && e === 3) return true;
+    if (p === 2 && e === 1) return enemyAlive[b];
+    if (p === 3 && e === 1) return true;
+    if (p === 1 && e === 2) return enemyAlive[b];
+    if (p === 1 && e === 3) return enemyAlive[b];
+    return true;
+}
+function canPlaceCard(i) {
+    const { playerAlive, enemyAlive, p, e } = getAliveCounts();
+    if (!playerAlive[i]) return false;
+    if (!enemyAlive[i]) return false; // Must face enemy
+    return true;
+}
+function isTurnValid() {
+    const { playerAlive, enemyAlive, p, e } = getAliveCounts();
+    if (p === 1 && e === 1) { for (let i = 0; i < 3; i++) if (enemyAlive[i] && !placedCards[i]) return false; }
+    if (p === 2 && e === 2) { for (let i = 0; i < 3; i++) if (enemyAlive[i] && !placedCards[i]) return false; }
+    if (p === 2 && e === 1) { for (let i = 0; i < 3; i++) if (enemyAlive[i] && !placedCards[i]) return false; }
+    return true;
+}
+
+// =====================
+// AGENT SELECTION
+// =====================
+function drawAgentChoices() {
+    agentChoices = agentDeck.slice(0,5);
+    updateAgentSelectionUI();
+}
+
+function updateAgentSelectionUI() {
+    let container = document.getElementById("agent-options");
+    container.innerHTML = "";
+    agentChoices.forEach(agent => {
+        let div = document.createElement("div");
+        div.className = "slot card";
+        let img = document.createElement("img");
+        img.src = agentImages[agent].full;
+        img.style.width = "140px"; img.style.height = "180px";
+        img.style.objectFit = "cover"; img.style.borderRadius = "12px";
+        div.appendChild(img);
+        div.onclick = () => selectAgent(agent, div);
+        container.appendChild(div);
     });
+}
 
-    document.addEventListener("click", () => bgMusic.play().catch(()=>{}), { once: true });
-
-    // Draw Agent Selection UI immediately
-    drawAgentChoices();
-
-    // =====================
-    // UTILITY FUNCTIONS
-    // =====================
-    function shuffle(deck) {
-        for (let i = deck.length - 1; i > 0; i--) {
-            let j = Math.floor(Math.random() * (i + 1));
-            [deck[i], deck[j]] = [deck[j], deck[i]];
-        }
+function selectAgent(agent, div) {
+    sfxSelect.currentTime = 0; sfxSelect.play().catch(()=>{});
+    if (selectedAgents.includes(agent)) {
+        selectedAgents = selectedAgents.filter(a => a !== agent);
+        div.classList.remove("selected");
+    } else {
+        if (selectedAgents.length >= 3) return alert("Already selected 3 agents!");
+        selectedAgents.push(agent);
+        div.classList.add("selected");
     }
+    
+    // Enable/Disable Buttons
+    const ready = selectedAgents.length === 3;
+    document.getElementById('create-btn').disabled = !ready;
+    document.getElementById('join-btn').disabled = !ready;
+    document.getElementById('status-text').innerText = ready ? "Ready to Play!" : "Select 3 Agents";
+}
 
-    function isAttack(card) { return card === "Attack"; }
-    function isCompatible(card, agentName) {
-        if (!card || isAttack(card)) return false;
-        return agentUtilities[agentName].includes(card.split(" (")[0]);
-    }
+// =====================
+// MULTIPLAYER LOGIC
+// =====================
+window.createRoom = function() {
+    if (selectedAgents.length !== 3) return;
+    
+    isHost = true;
+    myId = "p1";
+    playerAgents = selectedAgents.map(a => ({ name: a, hp: 100 }));
+    generateSpecialHand(); // Generate specials for me
+    initDecks(); // Init my deck
 
-    // =====================
-    // AGENT SELECTION LOGIC
-    // =====================
-    function drawAgentChoices() {
-        let container = document.getElementById("agent-options");
-        container.innerHTML = "";
-        
-        // Pick 5 random agents to choose from
-        let choices = agentDeck.slice(0, 5);
-        
-        choices.forEach(agent => {
-            let div = document.createElement("div");
-            div.className = "slot card";
-            let img = document.createElement("img");
-            img.src = agentImages[agent].full;
-            img.style.width = "140px"; img.style.height = "180px";
-            img.style.objectFit = "cover"; img.style.borderRadius = "12px";
-            div.appendChild(img);
-            
-            div.onclick = () => {
-                // Toggle selection
-                if (selectedAgents.includes(agent)) {
-                    selectedAgents = selectedAgents.filter(a => a !== agent);
-                    div.classList.remove("selected");
-                } else {
-                    if (selectedAgents.length >= 3) return alert("You can only select 3 agents!");
-                    selectedAgents.push(agent);
-                    div.classList.add("selected");
-                }
-                
-                updateLobbyUI();
-            };
-            container.appendChild(div);
-        });
-    }
+    const newRoomRef = push(ref(db, 'rooms'));
+    roomRef = newRoomRef;
+    const roomId = roomRef.key;
 
-    function updateLobbyUI() {
-        const status = document.getElementById("select-status");
-        const matchBox = document.getElementById("matchmaking-box");
-        
-        if (selectedAgents.length === 3) {
-            status.innerText = "Team Selected!";
-            status.style.color = "#00ffcc";
-            matchBox.classList.remove("hidden");
-        } else {
-            status.innerText = `Select ${3 - selectedAgents.length} more Agents`;
-            status.style.color = "white";
-            matchBox.classList.add("hidden");
-        }
-    }
-
-    // =====================
-    // LOBBY LOGIC (Create/Join)
-    // =====================
-    document.getElementById("create-btn").onclick = () => {
-        if (selectedAgents.length !== 3) return;
-
-        isHost = true;
-        myId = "p1";
-        myAgents = selectedAgents.map(a => ({ name: a, hp: 100 }));
-        generateSpecialHand();
-
-        // Create DB Entry
-        const newRoomRef = push(ref(db, 'rooms'));
-        roomRef = newRoomRef;
-        const roomId = roomRef.key;
-
-        const initialState = {
-            status: "waiting",
-            host: selectedAgents,
-            guest: [],
-            createdAt: Date.now(),
-            gameState: {
-                turn: 0,
-                p1: { agents: myAgents, hand: [], placed: [null,null,null], confirmed: false },
-                p2: { agents: [], hand: [], placed: [null,null,null], confirmed: false }
-            }
-        };
-
-        set(roomRef, initialState);
-
-        // UI Switch
-        document.getElementById("matchmaking-box").classList.add("hidden");
-        document.getElementById("waiting-box").classList.remove("hidden");
-        document.getElementById("room-code-display").innerText = roomId;
-        
-        listenForGameStart();
+    const initialState = {
+        status: "waiting",
+        host: { agents: playerAgents, placed: [null,null,null], confirmed: false },
+        guest: { agents: [], placed: [null,null,null], confirmed: false },
+        turn: 1
     };
 
-    document.getElementById("join-btn").onclick = () => {
-        if (selectedAgents.length !== 3) return alert("Select 3 agents first!");
+    set(roomRef, initialState);
+
+    document.getElementById('lobby-menu').style.display = 'none';
+    document.getElementById('waiting-menu').style.display = 'block';
+    document.getElementById('room-code-display').innerText = roomId;
+    
+    listenForGameStart();
+};
+
+window.joinRoom = function() {
+    if (selectedAgents.length !== 3) return;
+    const roomId = document.getElementById('join-code-input').value.trim();
+    if (!roomId) return alert("Enter Room Code!");
+
+    const r = ref(db, 'rooms/' + roomId);
+    get(r).then(snapshot => {
+        if (!snapshot.exists()) return alert("Room not found!");
+        const data = snapshot.val();
+        if (data.status !== "waiting") return alert("Room full/started.");
+
+        isHost = false;
+        myId = "p2";
+        roomRef = r;
+
+        playerAgents = selectedAgents.map(a => ({ name: a, hp: 100 }));
+        enemyAgents = data.host.agents; // Get opponent data
+        generateSpecialHand(); // Generate specials for me
+        initDecks(); // Init my deck
+
+        update(r, {
+            guest: { agents: playerAgents, placed: [null,null,null], confirmed: false },
+            status: "playing"
+        });
+
+        startGameLocal();
+        listenForUpdates();
+    }).catch(err => alert("Error: " + err.message));
+};
+
+window.copyCode = function() {
+    const code = document.getElementById('room-code-display').innerText;
+    navigator.clipboard.writeText(code).then(() => alert("Code copied!"));
+};
+
+function listenForGameStart() {
+    onValue(roomRef, (snapshot) => {
+        const data = snapshot.val();
+        if (!data) return;
         
-        const roomId = document.getElementById("join-code-input").value.trim();
-        if (!roomId) return alert("Enter a Room Code!");
-
-        const r = ref(db, 'rooms/' + roomId);
-        get(r).then(snapshot => {
-            if (!snapshot.exists()) return alert("Room not found!");
-            
-            const data = snapshot.val();
-            if (data.status !== "waiting") return alert("Room is full or started.");
-
-            isHost = false;
-            myId = "p2";
-            roomRef = r;
-
-            myAgents = selectedAgents.map(a => ({ name: a, hp: 100 }));
-            oppAgents = data.host.map(a => ({ name: a, hp: 100 })); // Host is P1
-            
-            generateSpecialHand();
-
-            // Update DB
-            update(roomRef, {
-                guest: selectedAgents,
-                status: "playing",
-                [`gameState/p2/agents`]: myAgents
-            });
-
-            // Join game immediately
-            document.getElementById("lobby-ui").classList.add("hidden");
+        // If I am Host and Guest joined
+        if (isHost && data.status === "playing" && !enemyAgents.length) {
+            enemyAgents = data.guest.agents;
             startGameLocal();
-            listenForGameUpdates();
-
-        }).catch(err => alert("Error: " + err.message));
-    };
-
-    window.copyCode = function() {
-        const code = document.getElementById("room-code-display").innerText;
-        navigator.clipboard.writeText(code).then(() => alert("Code copied!"));
-    };
-
-    function listenForGameStart() {
-        onValue(roomRef, (snapshot) => {
-            const data = snapshot.val();
-            if (!data) return;
-
-            if (data.status === "playing" && isHost && oppAgents.length === 0) {
-                oppAgents = data.guest.map(a => ({ name: a, hp: 100 }));
-                document.getElementById("lobby-ui").classList.add("hidden");
-                
-                initializeSharedDeck();
-                startGameLocal();
-                listenForGameUpdates();
-            }
-        });
-    }
-
-    function initializeSharedDeck() {
-        let masterDeck = Object.keys(cardImages)
-            .filter(c => !c.includes("Sentinel") && !c.includes("Initiator") && !c.includes("Controller"))
-            .concat(Array(10).fill("Attack"));
-        shuffle(masterDeck);
-
-        let p1Hand = masterDeck.splice(0, 3);
-        let p2Hand = masterDeck.splice(0, 3);
-
-        update(roomRef, {
-            'gameState/deck': masterDeck,
-            'gameState/p1/hand': p1Hand,
-            'gameState/p1/handCount': 3,
-            'gameState/p2/hand': p2Hand,
-            'gameState/p2/handCount': 3,
-            'gameState/turn': 1
-        });
-    }
-
-    // =====================
-    // GAME FLOW
-    // =====================
-    function startGameLocal() {
-        sfxStart.play().catch(()=>{});
-        document.getElementById("game").classList.remove("hidden");
-        createBoard();
-        updateMyUI();
-        updateOpponentUI();
-    }
-
-    function createBoard() {
-        let lanesDiv = document.getElementById("lanes");
-        lanesDiv.innerHTML = "";
-        for (let i = 0; i < 3; i++) {
-            let lane = document.createElement("div");
-            lane.className = "lane";
-            lane.innerHTML = `
-                <div class="slot agent"></div> <!-- Opponent Agent -->
-                <div class="slot enemy-slot">?</div> <!-- Opponent Card -->
-                <div class="slot place-slot" onclick="placeCard(${i})">+</div> <!-- My Card -->
-                <div class="slot agent" onclick="selectAgentSwap(${i})"></div> <!-- My Agent -->
-            `;
-            lanesDiv.appendChild(lane);
+            listenForUpdates(); // Start listening for moves
         }
-    }
+    });
+}
 
-    function generateSpecialHand() {
-        specialHand = [];
-        let hasDuelistAttack = false;
-        myAgents.forEach(agent => {
-            let role = agentRoles[agent.name];
-            if (!role) return;
-            if (role === "Sentinel") specialHand.push("BlockAttack (Sentinel)");
-            if (role === "Initiator") specialHand.push("Draw2 (Initiator)");
-            if (role === "Controller") specialHand.push("Deflect (Controller)");
-            if (role === "Duelist" && !hasDuelistAttack) {
-                specialHand.push("Attack");
-                hasDuelistAttack = true;
-            }
-        });
-        updateSpecialHandUI();
-    }
+function listenForUpdates() {
+    onValue(ref(db, roomRef + '/gameState'), (snapshot) => {
+        const state = snapshot.val();
+        if (!state) return;
 
-    // =====================
-    // SYNC LOGIC
-    // =====================
-    function listenForGameUpdates() {
-        onValue(ref(db, roomRef + '/gameState'), (snapshot) => {
-            const state = snapshot.val();
-            if (!state) return;
+        const oppId = myId === "p1" ? "p2" : "p1";
+        const oppData = state[oppId];
+        const myData = state[myId];
 
-            // 1. Sync Hands
-            if (state[myId] && state[myId].hand) {
-                myHand = state[myId].hand;
-                updateHandUI();
-            }
+        // 1. Sync Opponent Agents (HP/Position)
+        if (oppData && oppData.agents) {
+            enemyAgents = oppData.agents;
+            updateEnemyUI();
+        }
 
-            // 2. Sync Agents
-            if (state[myId] && state[myId].agents) {
-                myAgents = state[myId].agents;
-                updateMyUI();
-            }
-            if (state[getOppId()] && state[getOppId()].agents) {
-                oppAgents = state[getOppId()].agents;
-                updateOpponentUI();
-            }
-
-            // 3. Resolution Check
-            const p1Ready = state.p1 && state.p1.confirmed;
-            const p2Ready = state.p2 && state.p2.confirmed;
-
-            if (p1Ready && p2Ready && !gameOver) {
-                if (isHost) resolveTurnLogic(state);
+        // 2. Check for Resolution
+        if (myData && oppData && myData.confirmed && oppData.confirmed && !gameOver) {
+            // Both confirmed. Resolve.
+            // Get Opponent Cards
+            enemyPlacedCards = oppData.placed;
+            resolveMultiplayerTurn();
+        }
+        
+        // 3. Update Turn Indicator
+        const indicator = document.getElementById("turn-indicator");
+        if (myData && oppData) {
+            if (myData.confirmed && !oppData.confirmed) {
+                indicator.innerText = "Waiting for Opponent...";
+                indicator.style.display = "block";
+            } else if (!myData.confirmed && oppData.confirmed) {
+                indicator.innerText = "Opponent is Ready!";
+                indicator.style.display = "block";
             } else {
-                // Status Text
-                const indicator = document.getElementById("turn-indicator");
-                if (confirmedTurn) {
-                    indicator.innerText = "Waiting for Opponent...";
-                    indicator.style.display = "block";
-                } else if (state[getOppId()] && state[getOppId()].confirmed) {
-                    indicator.innerText = "Opponent is Ready!";
-                    indicator.style.display = "block";
-                } else {
-                    indicator.style.display = "none";
-                }
-            }
-        });
-    }
-
-    function getOppId() { return myId === "p1" ? "p2" : "p1"; }
-
-    window.confirmTurn = function() {
-        if (gameOver || confirmedTurn) return;
-        
-        confirmedTurn = true;
-        sfxConfirm.play().catch(()=>{});
-        document.getElementById("confirm-btn").disabled = true;
-        document.getElementById("confirm-btn").innerText = "Locked In!";
-
-        const updates = {};
-        updates[`${myId}/confirmed`] = true;
-        updates[`${myId}/placed`] = myPlacedCards;
-        updates[`${myId}/hand`] = myHand;
-        
-        update(ref(db, roomRef + '/gameState'), updates);
-    };
-
-    // =====================
-    // RESOLUTION (HOST ONLY)
-    // =====================
-    async function resolveTurnLogic(state) {
-        let p1Cards = state.p1.placed || [null,null,null];
-        let p2Cards = state.p2.placed || [null,null,null];
-
-        // Simple Delay for suspense
-        await new Promise(r => setTimeout(r, 1000));
-
-        let p1Agents = state.p1.agents;
-        let p2Agents = state.p2.agents;
-
-        // Combat Loop
-        for (let i = 0; i < 3; i++) {
-            let pA = p1Agents[i];
-            let eA = p2Agents[i];
-            let pC = p1Cards[i];
-            let eC = p2Cards[i];
-
-            if (!pA || pA.hp <= 0 || !eA || eA.hp <= 0) continue;
-
-            // P1 Attacks
-            if (pC && pC.card === "Attack") {
-                if (eC && eC.card === "BlockAttack (Sentinel)") {
-                    // Blocked
-                } else if (eC && isCompatible(eC.card, eA.name)) {
-                    eA.hp = eA.hp === 100 ? 1 : 0;
-                } else {
-                    eA.hp = 0;
-                }
-            }
-
-            // P2 Attacks
-            if (eC && eC.card === "Attack") {
-                if (pC && pC.card === "BlockAttack (Sentinel)") {
-                    // Blocked
-                } else if (pC && isCompatible(pC.card, pA.name)) {
-                    pA.hp = pA.hp === 100 ? 1 : 0;
-                } else {
-                    pA.hp = 0;
-                }
+                indicator.style.display = "none";
             }
         }
+    });
+}
 
-        // Check Win
-        let p1Alive = p1Agents.some(a => a.hp > 0);
-        let p2Alive = p2Agents.some(a => a.hp > 0);
-        let winner = null;
-        if (!p1Alive) winner = "p2";
-        if (!p2Alive) winner = "p1";
+// =====================
+// GAME FLOW
+// =====================
+function initDecks() {
+    // Create a local deck for this player (simplifies logic vs shared deck)
+    actionDeck = Object.keys(cardImages)
+        .filter(c => !c.includes("Sentinel") && !c.includes("Initiator") && !c.includes("Controller"))
+        .concat(Array(10).fill("Attack"));
+    shuffle(actionDeck);
+    discardDeck = [];
+    hand = [];
+    drawCards();
+}
 
-        // Draw Cards
-        let currentDeck = state.deck || [];
-        let newP1Hand = [...state.p1.hand];
-        let newP2Hand = [...state.p2.hand];
+function startGameLocal() {
+    sfxStart.currentTime = 0; sfxStart.play().catch(()=>{});
+    document.getElementById("agent-selection").style.display = "none";
+    document.getElementById("game").style.display = "block";
+    
+    createBoard();
+    updateAgentsUI();
+    updateEnemyUI();
+    updateHandUI(true);
+    updateSpecialHandUI();
+}
 
-        while (newP1Hand.length < 3 && currentDeck.length > 0) newP1Hand.push(currentDeck.pop());
-        while (newP2Hand.length < 3 && currentDeck.length > 0) newP2Hand.push(currentDeck.pop());
+// =====================
+// ACTIONS
+// =====================
+window.selectAgentSwap = function(i) {
+    if (confirmedTurn) return;
+    let lanes = document.getElementById("lanes").children;
+    if (selectedAgentIndex === null) {
+        if (playerAgents[i].hp === 0) return;
+        selectedAgentIndex = i;
+        lanes[i].children[3].classList.add("selected");
+        return;
+    }
 
-        // Push New State
-        const newState = {
-            deck: currentDeck,
-            p1: { agents: p1Agents, hand: newP1Hand, placed: [null,null,null], confirmed: false },
-            p2: { agents: p2Agents, hand: newP2Hand, placed: [null,null,null], confirmed: false },
-            turn: state.turn + 1,
-            winner: winner
-        };
+    let a = selectedAgentIndex;
+    let b = i;
+    if (!isValidSwap(a, b)) {
+        alert("Invalid swap: cannot move agent here due to lane rules.");
+        lanes[a].children[3].classList.remove("selected");
+        selectedAgentIndex = null;
+        return;
+    }
+    lanes[a].children[3].classList.remove("selected");
+    if (a === b) { selectedAgentIndex = null; return; }
 
-        await set(ref(db, roomRef + '/gameState'), newState);
+    [playerAgents[a], playerAgents[b]] = [playerAgents[b], playerAgents[a]];
+    [placedCards[a], placedCards[b]] = [placedCards[b], placedCards[a]];
 
-        // Reset Local
+    sfxSwap.currentTime = 0; sfxSwap.play().catch(()=>{});
+    selectedAgentIndex = null;
+
+    lanes[a].children[3].classList.add("shake");
+    lanes[b].children[3].classList.add("shake");
+    setTimeout(() => {
+        lanes[a].children[3].classList.remove("shake");
+        lanes[b].children[3].classList.remove("shake");
+    }, 200);
+
+    updateAgentsUI();
+    updateBoardUI();
+    
+    // Sync Swap
+    syncGameUpdate();
+}
+
+window.placeCard = function(i) {
+    if (isPlacingCard || confirmedTurn) return;
+    if (selectedCardIndex === null && selectedSpecialIndex === null) return;
+    if (playerAgents[i].hp === 0) return alert("Your agent is dead!");
+    if (enemyAgents[i].hp === 0) return alert("No enemy here!");
+    if (!canPlaceCard(i)) return alert("Cannot place here — must face at least one enemy!");
+    if (placedCards[i]) return alert("Slot full!");
+
+    isPlacingCard = true;
+    const lanes = document.getElementById("lanes").children;
+    const targetSlot = lanes[i].children[2];
+
+    let card, cardEl;
+    let wasSpecial = selectedSpecialIndex !== null;
+    let removalIndex = wasSpecial ? selectedSpecialIndex : selectedCardIndex;
+
+    if (wasSpecial) {
+        cardEl = document.getElementById("special-hand").children[removalIndex];
+        card = specialHand[removalIndex];
+    } else {
+        cardEl = document.getElementById("hand").children[removalIndex];
+        card = hand[removalIndex];
+    }
+    if (!cardEl) { isPlacingCard = false; return; }
+
+    // Draw 2 Logic
+    if (card === "Draw2 (Initiator)") {
+        bonusDraw += 2;
+        sfxPlace.currentTime = 0; sfxPlace.play().catch(()=>{});
+        placedCards[i] = { card: card };
+        if (wasSpecial) specialHand.splice(removalIndex, 1);
+        else hand.splice(removalIndex, 1);
+        updateHandUI(false); updateSpecialHandUI(); updateBoardUI();
+        isPlacingCard = false;
+        return;
+    }
+
+    // Animation
+    const rectStart = cardEl.getBoundingClientRect();
+    const rectEnd = targetSlot.getBoundingClientRect();
+    const flyingCard = cardEl.cloneNode(true);
+    flyingCard.classList.add("card-fly");
+    cardEl.style.visibility = "hidden";
+    flyingCard.style.left = rectStart.left + "px";
+    flyingCard.style.top = rectStart.top + "px";
+    flyingCard.style.width = rectStart.width + "px";
+    flyingCard.style.height = rectStart.height + "px";
+    document.body.appendChild(flyingCard);
+    flyingCard.offsetWidth;
+    flyingCard.style.left = rectEnd.left + "px";
+    flyingCard.style.top = rectEnd.top + "px";
+
+    setTimeout(() => {
+        sfxPlace.currentTime = 0; sfxPlace.play().catch(()=>{});
+        placedCards[i] = { card: card };
+        if (wasSpecial) specialHand.splice(removalIndex, 1);
+        else hand.splice(removalIndex, 1);
+        
+        flyingCard.remove();
+        updateHandUI(false); updateSpecialHandUI(); updateBoardUI();
+        isPlacingCard = false;
+    }, 400);
+}
+
+window.confirmTurn = function() {
+    if (gameOver || confirmedTurn) return;
+    if (!isTurnValid()) return alert("Invalid positioning! You cannot hide in an empty lane.");
+
+    confirmedTurn = true;
+    sfxConfirm.currentTime = 0; sfxConfirm.play().catch(()=>{});
+    
+    document.getElementById("confirm-btn").disabled = true;
+    document.getElementById("confirm-btn").innerText = "Locked In!";
+
+    // Sync my state
+    const updates = {};
+    updates[`${myId}/agents`] = playerAgents;
+    updates[`${myId}/placed`] = placedCards;
+    updates[`${myId}/confirmed`] = true;
+    update(ref(db, roomRef + '/gameState'), updates);
+}
+
+// =====================
+// RESOLUTION
+// =====================
+async function resolveMultiplayerTurn() {
+    // 1. Reveal
+    revealEnemyCards();
+    await new Promise(r => setTimeout(r, 1500)); // Wait for animations
+
+    // 2. Combat
+    resolveCombat();
+    
+    // 3. Check Win
+    checkWin();
+    
+    // 4. UI Update
+    updateAgentsUI();
+    updateEnemyUI();
+
+    if (!gameOver) {
+        // 5. Collapse (Visual only for now)
+        // collapseLanes(); // Optionally keep this
+        
+        // 6. Clean up Board
+        await new Promise(r => setTimeout(r, 1000));
+        fadeOutActionCards();
+        await new Promise(r => setTimeout(r, 400));
+        
+        // Reset Data
+        placedCards = [null,null,null];
+        enemyPlacedCards = [null,null,null];
+        
+        // Draw New Cards
+        drawCards();
+        
+        // Sync New State
         confirmedTurn = false;
         document.getElementById("confirm-btn").disabled = false;
         document.getElementById("confirm-btn").innerText = "Confirm Turn";
-        myPlacedCards = [null,null,null];
+        updateBoardUI();
+        updateHandUI(false);
+
+        const updates = {};
+        updates[`${myId}/confirmed`] = false;
+        updates[`${myId}/placed`] = [null,null,null];
+        updates[`${myId}/agents`] = playerAgents; // Sync HP changes
+        updates[`${myId}/handCount`] = hand.length;
+        update(ref(db, roomRef + '/gameState'), updates);
     }
+}
 
-    // =====================
-    // UI UPDATES
-    // =====================
-    function updateMyUI() {
-        let lanes = document.getElementById("lanes").children;
-        for (let i = 0; i < 3; i++) {
-            let a = myAgents[i];
-            let div = lanes[i].children[3];
-            div.innerHTML = "";
+function syncGameUpdate() {
+    if (!roomRef) return;
+    const updates = {};
+    updates[`${myId}/agents`] = playerAgents;
+    updates[`${myId}/placed`] = placedCards;
+    updates[`${myId}/confirmed`] = confirmedTurn;
+    update(ref(db, roomRef + '/gameState'), updates);
+}
 
-            if (!a || a.hp === 0) {
-                div.innerHTML = '<span class="dead-text">DEAD</span>';
-                continue;
-            }
-            let img = document.createElement("img");
-            img.src = a.hp === 100 ? agentImages[a.name].full : agentImages[a.name].low;
-            div.appendChild(img);
+function generateSpecialHand() {
+    specialHand = [];
+    let hasDuelistAttack = false;
+    playerAgents.forEach(agent => {
+        let role = agentRoles[agent.name];
+        if (role === "Sentinel") specialHand.push("BlockAttack (Sentinel)");
+        if (role === "Initiator") specialHand.push("Draw2 (Initiator)");
+        if (role === "Controller") specialHand.push("Deflect (Controller)");
+        if (role === "Duelist" && !hasDuelistAttack) {
+            specialHand.push("Attack");
+            hasDuelistAttack = true;
         }
-    }
+    });
+}
 
-    function updateOpponentUI() {
-        let lanes = document.getElementById("lanes").children;
-        for (let i = 0; i < 3; i++) {
-            let a = oppAgents[i];
-            let div = lanes[i].children[0];
-            div.innerHTML = "";
-
-            if (!a || a.hp === 0) {
-                div.innerHTML = '<span class="dead-text">DEAD</span>';
-                continue;
-            }
-            let img = document.createElement("img");
-            img.src = a.hp === 100 ? agentImages[a.name].full : agentImages[a.name].low;
-            div.appendChild(img);
+function drawCards() {
+    let drawCount = 3 + bonusDraw;
+    while (hand.length < drawCount) {
+        if (actionDeck.length === 0) {
+            actionDeck = [...discardDeck];
+            discardDeck = [];
+            shuffle(actionDeck);
         }
+        if(actionDeck.length > 0) hand.push(actionDeck.pop());
     }
+    bonusDraw = 0;
+}
 
-    function updateHandUI() {
-        let handDiv = document.getElementById("hand");
-        handDiv.innerHTML = "";
-
-        myHand.forEach((c, i) => {
-            let d = document.createElement("div");
-            d.className = "slot card";
-            if (cardImages[c]) {
-                let img = document.createElement("img");
-                img.src = cardImages[c];
-                d.appendChild(img);
-            } else { d.innerText = c; }
-
-            d.onclick = () => {
-                selectedCardIndex = i;
-                selectedSpecialIndex = null;
-                document.querySelectorAll("#hand .card, #special-hand .card").forEach(el => el.classList.remove("selected"));
-                d.classList.add("selected");
-            };
-            handDiv.appendChild(d);
-        });
+// =====================
+// UI RENDERING
+// =====================
+function createBoard() {
+    let lanesDiv = document.getElementById("lanes");
+    lanesDiv.innerHTML = "";
+    for (let i = 0; i < 3; i++) {
+        let lane = document.createElement("div");
+        lane.className = "lane";
+        lane.innerHTML = `
+            <div class="slot agent"></div> <!-- Enemy Agent -->
+            <div class="slot enemy-slot">?</div> <!-- Enemy Card -->
+            <div class="slot place-slot" onclick="placeCard(${i})">+</div> <!-- My Card -->
+            <div class="slot agent" onclick="selectAgentSwap(${i})"></div> <!-- My Agent -->
+        `;
+        lanesDiv.appendChild(lane);
     }
+}
 
-    function updateSpecialHandUI() {
-        let div = document.getElementById("special-hand");
+function updateAgentsUI() {
+    let lanes = document.getElementById("lanes").children;
+    for (let i = 0; i < 3; i++) {
+        let a = playerAgents[i];
+        let div = lanes[i].children[3];
         div.innerHTML = "";
-
-        specialHand.forEach((card, i) => {
-            let d = document.createElement("div");
-            d.className = "slot card";
-            if (cardImages[card]) {
-                let img = document.createElement("img");
-                img.src = cardImages[card];
-                d.appendChild(img);
-            } else { d.innerText = card; }
-
-            d.onclick = () => {
-                selectedSpecialIndex = i;
-                selectedCardIndex = null;
-                document.querySelectorAll("#hand .card, #special-hand .card").forEach(el => el.classList.remove("selected"));
-                d.classList.add("selected");
-            };
-            div.appendChild(d);
-        });
+        if (!a || a.hp === 0) {
+            if (justDiedPlayer[i]) {
+                div.innerHTML = '<span class="dead-text dead-animate">DEAD</span>';
+                justDiedPlayer[i] = false;
+            } else div.innerHTML = '<span class="dead-text">DEAD</span>';
+            continue;
+        }
+        let img = document.createElement("img");
+        img.src = a.hp === 100 ? agentImages[a.name].full : agentImages[a.name].low;
+        div.appendChild(img);
     }
+}
 
-    // =====================
-    // ACTIONS
-    // =====================
-    window.placeCard = function(i) {
-        if (confirmedTurn) return alert("Turn locked!");
-        if (myAgents[i].hp === 0) return alert("Agent is dead!");
-        
-        let cardData = null;
-        
-        // Check which hand is selected
-        if (selectedSpecialIndex !== null) {
-            cardData = specialHand[selectedSpecialIndex];
-            // Optional: remove from special hand if single use?
-            // For now, keeping it simple.
-        } else if (selectedCardIndex !== null) {
-            cardData = myHand[selectedCardIndex];
-            myHand.splice(selectedCardIndex, 1);
+function updateEnemyUI() {
+    let lanes = document.getElementById("lanes").children;
+    for (let i = 0; i < 3; i++) {
+        let a = enemyAgents[i];
+        let div = lanes[i].children[0];
+        div.innerHTML = "";
+        if (!a || a.hp === 0) {
+            if (justDiedEnemy[i]) {
+                div.innerHTML = '<span class="dead-text dead-animate">DEAD</span>';
+                justDiedEnemy[i] = false;
+            } else div.innerHTML = '<span class="dead-text">DEAD</span>';
+            continue;
+        }
+        let img = document.createElement("img");
+        img.src = a.hp === 100 ? agentImages[a.name].full : agentImages[a.name].low;
+        div.appendChild(img);
+    }
+}
+
+function updateHandUI(animate = false) {
+    let handDiv = document.getElementById("hand");
+    handDiv.innerHTML = "";
+    hand.forEach((c, i) => {
+        let d = document.createElement("div");
+        d.addEventListener("mouseenter", () => {
+            const hoverClone = sfxHover.cloneNode();
+            hoverClone.volume = sfxHover.volume;
+            hoverClone.play().catch(()=>{});
+        });
+        d.className = "slot card";
+        if (cardImages[c]) {
+            let img = document.createElement("img");
+            img.src = cardImages[c];
+            d.appendChild(img);
+        } else d.innerText = c;
+        if (animate) setTimeout(() => d.classList.add("deal"), i * 150);
+        d.onclick = () => {
+            selectedCardIndex = i;
+            selectedSpecialIndex = null;
+            document.querySelectorAll("#hand .card, #special-hand .card").forEach(el => el.classList.remove("selected"));
+            d.classList.add("selected");
+        };
+        handDiv.appendChild(d);
+    });
+}
+
+function updateSpecialHandUI() {
+    let div = document.getElementById("special-hand");
+    div.innerHTML = "";
+    specialHand.forEach((card, i) => {
+        let d = document.createElement("div");
+        d.className = "slot card";
+        if (cardImages[card]) {
+            let img = document.createElement("img");
+            img.src = cardImages[card];
+            d.appendChild(img);
+        } else d.innerText = card;
+        d.onclick = () => {
+            selectedSpecialIndex = i;
             selectedCardIndex = null;
+            document.querySelectorAll("#hand .card, #special-hand .card").forEach(el => el.classList.remove("selected"));
+            d.classList.add("selected");
+        };
+        div.appendChild(d);
+    });
+}
+
+function updateBoardUI() {
+    let lanes = document.getElementById("lanes").children;
+    for (let i = 0; i < 3; i++) {
+        let c = placedCards[i];
+        let slot = lanes[i].children[2];
+        slot.innerHTML = "";
+        slot.classList.remove("place-slot");
+        slot.onclick = () => {
+            if (placedCards[i]) {
+                // Pick up
+                let picked = placedCards[i];
+                let isSpecial = picked.card.includes("Sentinel") || picked.card.includes("Initiator") || picked.card.includes("Controller");
+                if (isSpecial) { specialHand.push(picked.card); selectedSpecialIndex = specialHand.length - 1; }
+                else { hand.push(picked.card); selectedCardIndex = hand.length - 1; }
+                placedCards[i] = null;
+                updateBoardUI(); updateHandUI(false); updateSpecialHandUI();
+                // Visual reselect
+                setTimeout(() => {
+                    let cards = document.querySelectorAll(isSpecial ? "#special-hand .card" : "#hand .card");
+                    let idx = isSpecial ? selectedSpecialIndex : selectedCardIndex;
+                    if(cards[idx]) cards[idx].classList.add("selected");
+                }, 0);
+                return;
+            }
+            if (selectedCardIndex === null && selectedSpecialIndex === null) return;
+            placeCard(i);
+        };
+
+        if (!c) {
+            slot.innerText = "+";
+            slot.classList.add("place-slot");
         } else {
-            return; // Nothing selected
+            if (cardImages[c.card]) {
+                let img = document.createElement("img");
+                img.src = cardImages[c.card];
+                img.classList.add("place-pop");
+                slot.appendChild(img);
+            } else slot.innerText = c.card;
+        }
+    }
+}
+
+function revealEnemyCards() {
+    let lanes = document.getElementById("lanes").children;
+    for (let i = 0; i < 3; i++) {
+        let c = enemyPlacedCards[i];
+        let slot = lanes[i].children[1];
+        slot.innerHTML = "";
+        if (c) {
+            if (cardImages[c.card]) {
+                let img = document.createElement("img");
+                img.style.opacity = 0;
+                img.onload = () => {
+                    setTimeout(() => {
+                        img.classList.add("enemy-reveal");
+                        img.style.opacity = 1;
+                        const revealSfx = sfxHover.cloneNode();
+                        revealSfx.volume = sfxHover.volume * 0.25;
+                        revealSfx.play().catch(()=>{});
+                    }, 150 + (i * 120));
+                };
+                img.src = cardImages[c.card];
+                slot.appendChild(img);
+            } else slot.innerText = c.card;
+        } else slot.innerText = "?";
+    }
+}
+
+function fadeOutActionCards() {
+    let lanes = document.getElementById("lanes").children;
+    for (let i = 0; i < 3; i++) {
+        let enemyCard = lanes[i].children[1].querySelector("img");
+        let playerCard = lanes[i].children[2].querySelector("img");
+        if (enemyCard) enemyCard.classList.add("action-fade");
+        if (playerCard) playerCard.classList.add("action-fade");
+    }
+}
+
+// =====================
+// COMBAT LOGIC
+// =====================
+function resolveCombat() {
+    let lanes = document.getElementById("lanes").children;
+    let fights = getMatchups();
+
+    for (let f of fights) {
+        let i = f.p; let j = f.e;
+        let pC = placedCards[i]; let eC = enemyPlacedCards[j];
+        let pA = playerAgents[i]; let eA = enemyAgents[j];
+
+        if ((!pC && !eC) || (pA.hp === 0 && eA.hp === 0)) continue;
+        let pCard = pC ? pC.card : null;
+        let eCard = eC ? eC.card : null;
+        let enemySlot = lanes[j].children[0];
+        let playerSlot = lanes[i].children[3];
+
+        // Player Attack
+        if (pCard && pA.hp > 0 && eA.hp > 0 && isAttack(pCard)) {
+            sfxAttack.currentTime = 0; sfxAttack.play().catch(()=>{});
+            enemySlot.classList.add("hit");
+            setTimeout(() => enemySlot.classList.remove("hit"), 300);
+            if (eCard === "BlockAttack (Sentinel)") console.log("Blocked");
+            else if (!isCompatible(eCard, eA.name) && !isAttack(eCard)) {
+                eA.hp = 0; justDiedEnemy[j] = true;
+                sfxDeath.currentTime = 0; sfxDeath.play().catch(()=>{});
+                triggerDeathAnimation(enemySlot);
+            } else if (isCompatible(eCard, eA.name)) {
+                eA.hp = (eA.hp === 100) ? 1 : 0;
+            }
         }
 
-        myPlacedCards[i] = { card: cardData };
+        // Enemy Attack
+        if (eCard && eA.hp > 0 && pA.hp > 0 && isAttack(eCard)) {
+            sfxAttack.currentTime = 0; sfxAttack.play().catch(()=>{});
+            playerSlot.classList.add("hit");
+            setTimeout(() => playerSlot.classList.remove("hit"), 300);
+            
+            // Deflect Logic
+            if (pCard === "Deflect (Controller)") {
+                if (eA.hp === 100) eA.hp = 1;
+                else { eA.hp = 0; justDiedEnemy[j] = true; sfxDeath.currentTime=0; sfxDeath.play(); triggerDeathAnimation(enemySlot); }
+                continue;
+            }
+            
+            if (pCard === "BlockAttack (Sentinel)") console.log("Blocked");
+            else if (!isCompatible(pCard, pA.name) && !isAttack(pCard)) {
+                pA.hp = 0; justDiedPlayer[i] = true;
+                sfxDeath.currentTime = 0; sfxDeath.play().catch(()=>{});
+                triggerDeathAnimation(playerSlot);
+            } else if (isCompatible(pCard, pA.name)) {
+                pA.hp = (pA.hp === 100) ? 1 : 0;
+            }
+        }
+    }
+}
 
-        // Update Visuals
-        let lanes = document.getElementById("lanes").children;
-        let slot = lanes[i].children[2]; // Player Slot
-        slot.innerHTML = "";
-        
-        let img = document.createElement("img");
-        img.src = cardImages[cardData];
-        slot.appendChild(img);
+function getMatchups() {
+    let pairs = [];
+    for (let i = 0; i < 3; i++) {
+        let pAlive = playerAgents[i] && playerAgents[i].hp > 0;
+        let eAlive = enemyAgents[i] && enemyAgents[i].hp > 0;
+        if (pAlive && eAlive) pairs.push({ p: i, e: i });
+    }
+    return pairs;
+}
 
-        updateHandUI();
-    };
+function triggerDeathAnimation(slot) {
+    slot.classList.add("shake");
+    setTimeout(() => { slot.classList.remove("shake"); slot.classList.add("shatter"); }, 200);
+    setTimeout(() => slot.classList.remove("shatter"), 700);
+}
 
-    window.selectAgentSwap = function(i) {
-        alert("Swapping disabled in PvP MVP.");
-    };
+function checkWin() {
+    let resultDiv = document.getElementById("result");
+    let playerAlive = playerAgents.some(a => a.hp > 0);
+    let enemyAlive = enemyAgents.some(a => a.hp > 0);
 
+    if (!playerAlive || !enemyAlive) {
+        gameOver = true;
+        if (!playerAlive) {
+            resultDiv.innerText = "YOU LOSE"; resultDiv.classList.add("lose");
+        } else {
+            resultDiv.innerText = "YOU WIN"; resultDiv.classList.add("win");
+        }
+        // Cleanup Room (Optional)
+        if(isHost) remove(roomRef);
+    }
+}
+
+// =====================
+// INIT
+// =====================
+drawAgentChoices();
 </script>
 </body>
 </html>
