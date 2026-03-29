@@ -1613,6 +1613,7 @@ function updateBoardUI() {
                 if (isSpecial) { specialHand.push(picked.card); selectedSpecialIndex = specialHand.length - 1; }
                 else { hand.push(picked.card); selectedCardIndex = hand.length - 1; }
                 placedCards[i] = null;
+                if (picked.card === "Draw2 (Initiator)") { bonusDraw -= 2; }
                 
                 updateBoardUI(); updateHandUI(false); updateSpecialHandUI();
                 
