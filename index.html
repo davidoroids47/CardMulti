@@ -534,6 +534,10 @@ transition: all 0.4s ease;
     pointer-events: none;
     animation: reshuffleFlash 1.8s ease forwards;
 }
+    .card.dragging {
+    opacity: 0.35;
+    transform: scale(0.9);
+}
 </style>
 </head>
 <body>
@@ -1544,6 +1548,17 @@ function updateHandUI(animate = false) {
             document.querySelectorAll("#hand .card, #special-hand .card").forEach(el => el.classList.remove("selected"));
             d.classList.add("selected");
         };
+                d.draggable = true;
+        d.addEventListener("dragstart", (e) => {
+            if (confirmedTurn) { e.preventDefault(); return; }
+            selectedCardIndex = i;
+            selectedSpecialIndex = null;
+            e.dataTransfer.effectAllowed = "move";
+            d.classList.add("dragging");
+        });
+        d.addEventListener("dragend", () => {
+            d.classList.remove("dragging");
+        });
         handDiv.appendChild(d);
     });
 }
@@ -1566,6 +1581,17 @@ function updateSpecialHandUI() {
             document.querySelectorAll("#hand .card, #special-hand .card").forEach(el => el.classList.remove("selected"));
             d.classList.add("selected");
         };
+                d.draggable = true;
+        d.addEventListener("dragstart", (e) => {
+            if (confirmedTurn) { e.preventDefault(); return; }
+            selectedSpecialIndex = i;
+            selectedCardIndex = null;
+            e.dataTransfer.effectAllowed = "move";
+            d.classList.add("dragging");
+        });
+        d.addEventListener("dragend", () => {
+            d.classList.remove("dragging");
+        });
         div.appendChild(d);
     });
 }
@@ -1601,7 +1627,25 @@ function updateBoardUI() {
             if (selectedCardIndex === null && selectedSpecialIndex === null) return;
             placeCard(i);
         };
-
+                slot.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            e.dataTransfer.dropEffect = "move";
+            slot.style.borderColor = "#00ffcc";
+            slot.style.boxShadow = "0 0 15px #00ffcc";
+        });
+        slot.addEventListener("dragleave", () => {
+            slot.style.borderColor = "";
+            slot.style.boxShadow = "";
+        });
+        slot.addEventListener("drop", (e) => {
+            e.preventDefault();
+            slot.style.borderColor = "";
+            slot.style.boxShadow = "";
+            if (confirmedTurn) return;
+            if (placedCards[i]) return;
+            if (selectedCardIndex === null && selectedSpecialIndex === null) return;
+            placeCard(i);
+        });
         if (!c) {
             slot.innerText = "+";
             slot.classList.add("place-slot");
