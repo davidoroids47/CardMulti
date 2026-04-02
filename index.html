@@ -740,6 +740,19 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
+    // ── SITE STATUS CHECK — add right here ──
+const statusRef = ref(db, 'siteStatus');
+
+onValue(statusRef, snapshot => {
+    const status = snapshot.val();
+
+    if (status !== "open") {
+        document.body.innerHTML = `
+            <h1 style="color:#ff4655; margin-top:20vh;">⚠️ Server Busy</h1>
+            <p style="color:#ccc; font-size:18px;">Too many players right now. Try again later.</p>
+        `;
+    }
+});
 let roomRef = null;
 let myId = null;
 let isHost = false;
