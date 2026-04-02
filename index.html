@@ -1092,17 +1092,22 @@ window.createRoom = async function() {
     if (exists) { showToast("Couldn't generate code. Try again."); return; }
 
     roomRef = ref(db, 'rooms/' + code);
+    import { onDisconnect } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js";
 
-    const initialState = {
-        status: "waiting",
-        host: { agents: playerAgents },
-        guest: { agents: [] },
-        turn: 1,
-        gameState: {
-            p1: { agents: playerAgents, placed: [null,null,null], confirmed: false },
-            p2: { agents: [], placed: [null,null,null], confirmed: false }
-        }
-    };
+// Host deletes room on disconnect
+onDisconnect(roomRef).remove();
+
+   const initialState = {
+    status: "waiting",
+    createdAt: Date.now(), // ✅ ADD THIS
+    host: { agents: playerAgents },
+    guest: { agents: [] },
+    turn: 1,
+    gameState: {
+        p1: { agents: playerAgents, placed: [null,null,null], confirmed: false },
+        p2: { agents: [], placed: [null,null,null], confirmed: false }
+    }
+};
 
     set(roomRef, initialState);
 
